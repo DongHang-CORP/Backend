@@ -1,4 +1,4 @@
-package org.example.food.entity;
+package org.example.food.common.exception;
 
 public abstract class BaseException extends RuntimeException {
 

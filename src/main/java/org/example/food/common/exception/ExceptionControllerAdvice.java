@@ -1,4 +1,4 @@
-package org.example.food.entity;
+package org.example.food.common.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
