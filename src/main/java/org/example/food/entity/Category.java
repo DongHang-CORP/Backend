@@ -1,4 +1,4 @@
-package org.example.backend.entity;
+package org.example.food.entity;
 
 public enum Category {
     KOREAN_FOOD,

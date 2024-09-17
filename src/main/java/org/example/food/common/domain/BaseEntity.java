@@ -1,4 +1,4 @@
-package org.example.backend.common.domain;
+package org.example.food.common.domain;
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;

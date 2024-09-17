@@ -1,4 +1,4 @@
-package org.example.backend.entity;
+package org.example.food.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
