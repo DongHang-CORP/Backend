@@ -16,4 +16,10 @@ public class MemoryUserRepository implements UserRepository{
     public User findById(Long userId) {
         return store.get(userId);
     }
+
+
+    @Override
+    public void deleteUser(Long id) {
+
+    }
 }

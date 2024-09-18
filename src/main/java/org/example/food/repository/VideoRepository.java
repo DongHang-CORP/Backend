@@ -8,7 +8,9 @@ import java.util.Optional;
 
 public interface VideoRepository {
     List<Video> findAll();
-    Optional<Video> findById(Long id);
+    Video findById(Long id);
     Video save(Video video);
     void deleteById(Long id);
+    List<Video> getNearbyVideos(double userLat, double userLon);
+
 }
