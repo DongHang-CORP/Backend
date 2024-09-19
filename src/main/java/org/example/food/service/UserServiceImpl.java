@@ -16,7 +16,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User getUserById(Long id) {
-        return userRepository.findById(id);
+        return userRepository.findById(id).orElseThrow();
     }
 
     @Override
@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User updateUser(Long id, User user) {
-        User existingUser = userRepository.findById(id);
+        User existingUser = userRepository.findById(id).orElseThrow();
         if (existingUser != null) {
             existingUser.setUsername(user.getUsername());
             existingUser.setProfileImage(user.getProfileImage());
@@ -39,6 +39,6 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void deleteUser(Long id) {
-        userRepository.deleteUser(id);
+        userRepository.deleteById(id);
     }
 }

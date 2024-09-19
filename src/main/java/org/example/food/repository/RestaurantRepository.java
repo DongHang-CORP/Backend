@@ -1,16 +1,12 @@
 package org.example.food.repository;
 
 import org.example.food.entity.Restaurant;
-import org.example.food.entity.Video;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface RestaurantRepository {
-    List<Restaurant> findAll();
-    Restaurant findById(Long id);
-    Restaurant save(Restaurant restaurant);
-    void deleteById(Long id);
-    List<Restaurant> getNearbyRestaurants(double userLat, double userLon);
+public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
+    List<Restaurant> findByLatitudeBetweenAndLongitudeBetween(double minLat, double maxLat, double minLon, double maxLon);
+
 
 }
