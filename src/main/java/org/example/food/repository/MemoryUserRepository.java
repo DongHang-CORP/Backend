@@ -25,4 +25,8 @@ public class MemoryUserRepository implements UserRepository{
     public void deleteUser(Long id) {
         store.remove(id);
     }
+
+    public void clearStore() {
+        store.clear();
+    }
 }
