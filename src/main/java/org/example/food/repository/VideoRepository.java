@@ -2,15 +2,12 @@ package org.example.food.repository;
 
 import org.example.food.entity.Restaurant;
 import org.example.food.entity.Video;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface VideoRepository {
-    List<Video> findAll();
-    Video findById(Long id);
-    Video save(Video video);
-    void deleteById(Long id);
-    List<Video> getNearbyVideos(double userLat, double userLon);
-
+public interface VideoRepository extends JpaRepository<Video, Long> {
+    List<Video> findByRestaurantId(Long restaurantId);
+    
 }

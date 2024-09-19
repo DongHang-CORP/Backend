@@ -28,7 +28,7 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public Video getVideoById(Long id) {
-        return videoRepository.findById(id);
+        return videoRepository.findById(id).orElseThrow();
     }
 
     @Override
@@ -38,7 +38,7 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public Video updateVideo(Long id, Video video) {
-        Video existingVideo = videoRepository.findById(id);
+        Video existingVideo = videoRepository.findById(id).orElseThrow();
         if (existingVideo != null) {
             existingVideo.setTitle(video.getTitle());
             existingVideo.setContent(video.getContent());
@@ -62,7 +62,7 @@ public class VideoServiceImpl implements VideoService {
         // 비디오가 속한 레스토랑의 위치를 기준으로 필터링
         return allVideos.stream()
                 .filter(video -> {
-                    Restaurant restaurant = restaurantRepository.findById(video.getRestaurantId());
+                    Restaurant restaurant = restaurantRepository.findById(video.getId()).orElseThrow();
                     if (restaurant == null) return false;
 
                     double distance = LocationService.calculateDistance(
