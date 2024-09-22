@@ -1,49 +1,58 @@
 package org.example.food.service;
 
-import org.example.food.entity.Restaurant;
+import lombok.RequiredArgsConstructor;
+import org.example.food.domain.restaurant.Restaurant;
+import org.example.food.domain.restaurant.dto.RestaurantReqDto;
+import org.example.food.domain.restaurant.dto.RestaurantResDto;
+import org.example.food.domain.restaurant.mapper.RestaurantMapper;
 import org.example.food.repository.RestaurantRepository;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class RestaurantServiceImpl implements RestaurantService {
 
-    @Autowired
-    private RestaurantRepository restaurantRepository;
+    private final RestaurantMapper restaurantMapper = Mappers.getMapper(RestaurantMapper.class);
+    private final RestaurantRepository restaurantRepository;
 
     private static final double SEARCH_RADIUS = 5.0; // 5km 반경
 
 
     @Override
-    public List<Restaurant> getAllRestaurants() {
-        return restaurantRepository.findAll();
+    public List<RestaurantResDto> getAllRestaurants() {
+        List<Restaurant> restaurants = restaurantRepository.findAll();
+        return restaurants.stream()
+                .map(restaurantMapper::toRestaurantDto)  // 각각의 객체를 매핑
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Restaurant getRestaurantById(Long id) {
-        return restaurantRepository.findById(id).orElseThrow();
+    public RestaurantResDto getRestaurantById(Long id) {
+        Restaurant restaurant = findRestaurantById(id);
+        return restaurantMapper.toRestaurantDto(restaurant);
     }
 
     @Override
-    public Restaurant createRestaurant(Restaurant restaurant) {
-        return restaurantRepository.save(restaurant);
+    public Long createRestaurant(RestaurantReqDto restaurantReqDto) {
+        Restaurant restaurant = restaurantMapper.toEntity(restaurantReqDto);
+        restaurantRepository.save(restaurant);
+        return restaurant.getId();
     }
 
     @Override
-    public Restaurant updateRestaurant(Long id, Restaurant restaurant) {
-        Restaurant existingRestaurant = restaurantRepository.findById(id).orElseThrow();
-        if (existingRestaurant != null) {
-            existingRestaurant.setName(restaurant.getName());
-            existingRestaurant.setAddress(restaurant.getAddress());
-            existingRestaurant.setCategory(restaurant.getCategory());
-            existingRestaurant.setRating(restaurant.getRating());
-            existingRestaurant.setPhoneNumber(restaurant.getPhoneNumber());
-            return restaurantRepository.save(existingRestaurant);
-        }
-        return null;
+    @Transactional
+    public RestaurantResDto updateRestaurant(Long id, RestaurantReqDto restaurantReqDto) {
+        Restaurant restaurant = findRestaurantById(id);
+        restaurantMapper.updateRestaurantFromDto(restaurantReqDto, restaurant);
+        restaurantRepository.save(restaurant);
+        return restaurantMapper.toRestaurantDto(restaurant);
     }
 
     @Override
@@ -52,7 +61,12 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public List<Restaurant> getNearbyRestaurants(double userLat, double userLon) {
+    public Restaurant findRestaurantById(Long id) {
+        return restaurantRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("음식점이 존재하지 않습니다"));
+    }
+
+    @Override
+    public List<RestaurantResDto> getNearbyRestaurants(double userLat, double userLon) {
         // 기본적으로 위도/경도 범위를 이용해 먼저 필터링
         double latRange = SEARCH_RADIUS / 110.574; // 위도의 1도당 거리
         double lonRange = SEARCH_RADIUS / (111.320 * Math.cos(Math.toRadians(userLat))); // 경도의 1도당 거리
@@ -71,6 +85,7 @@ public class RestaurantServiceImpl implements RestaurantService {
                     );
                     return distance <= SEARCH_RADIUS;  // 반경 내의 레스토랑만 반환
                 })
+                .map(restaurantMapper::toRestaurantDto)
                 .collect(Collectors.toList());
     }
 

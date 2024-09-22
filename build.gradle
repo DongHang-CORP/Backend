@@ -32,9 +32,12 @@ dependencies {
     //aws 의존성
     implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.2'
     implementation 'com.amazonaws:aws-java-sdk-s3:1.12.100'
+    //mapper
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
     runtimeOnly 'com.h2database:h2'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

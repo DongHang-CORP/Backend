@@ -1,10 +1,13 @@
 package org.example.food.service;
 
-import org.example.food.entity.User;
+import org.example.food.domain.user.User;
+import org.example.food.domain.user.dto.UserReqDto;
+import org.example.food.domain.user.dto.UserResDto;
 
 public interface UserService {
-    User getUserById(Long id);
-    User createUser(User user);
-    User updateUser(Long id, User user);
+    UserResDto getUserById(Long id);
+    Long createUser(UserReqDto userReqDto);
+    UserResDto updateUser(Long id, UserReqDto userReqDto);
     void deleteUser(Long id);
+    User findUserById(Long id);
 }

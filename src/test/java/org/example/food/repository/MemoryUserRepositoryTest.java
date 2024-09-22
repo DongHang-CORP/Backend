@@ -1,13 +1,9 @@
 package org.example.food.repository;
 
 import org.assertj.core.api.Assertions;
-import org.example.food.entity.User;
+import org.example.food.domain.user.User;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class MemoryUserRepositoryTest {
 

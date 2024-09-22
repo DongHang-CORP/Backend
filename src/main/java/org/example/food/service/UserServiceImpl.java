@@ -1,44 +1,48 @@
 package org.example.food.service;
 
-import org.example.food.entity.User;
+import lombok.RequiredArgsConstructor;
+import org.example.food.domain.user.User;
+import org.example.food.domain.user.dto.UserReqDto;
+import org.example.food.domain.user.dto.UserResDto;
+import org.example.food.domain.user.mapper.UserMapper;
 import org.example.food.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
-
-    @Autowired
     private UserRepository userRepository;
-    public UserServiceImpl(UserRepository userRepository){
-        this.userRepository = userRepository;
+    private UserMapper userMapper;
+
+    @Override
+    public UserResDto getUserById(Long id) {
+        User user = findUserById(id);
+        return userMapper.toUserDto(user);
     }
 
     @Override
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow();
+    public Long createUser(UserReqDto userReqDto) {
+        User user = userMapper.toEntity(userReqDto);
+        userRepository.save(user);
+        return user.getId();
     }
 
     @Override
-    public User createUser(User user) {
-        return userRepository.save(user);
-    }
-
-    @Override
-    public User updateUser(Long id, User user) {
-        User existingUser = userRepository.findById(id).orElseThrow();
-        if (existingUser != null) {
-            existingUser.setUsername(user.getUsername());
-            existingUser.setProfileImage(user.getProfileImage());
-            existingUser.setPassword(user.getPassword());
-            existingUser.setEmail(user.getEmail());
-            return userRepository.save(existingUser);
-        }
-        return null;
+    public UserResDto updateUser(Long id, UserReqDto userReqDto) {
+        User user = findUserById(id);
+        userMapper.updateUserFromDto(userReqDto, user);
+        userRepository.save(user);
+        return userMapper.toUserDto(user);
     }
 
     @Override
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public User findUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
     }
 }
