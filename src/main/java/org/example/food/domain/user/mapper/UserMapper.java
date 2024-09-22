@@ -13,7 +13,7 @@ import org.mapstruct.MappingTarget;
 public interface UserMapper {
     User toEntity(UserReqDto userReqDto);
 
-    UserResDto toUserDto(Restaurant restaurant);
+    UserResDto toUserDto(User user);
 
     void updateUserFromDto(UserReqDto userReqDto, @MappingTarget User user);
 }
