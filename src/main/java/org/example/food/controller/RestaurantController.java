@@ -1,37 +1,46 @@
 package org.example.food.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.example.food.domain.restaurant.Restaurant;
+import org.example.food.domain.restaurant.dto.RestaurantReqDto;
+import org.example.food.domain.restaurant.dto.RestaurantResDto;
 import org.example.food.service.RestaurantService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/restaurants")
 public class RestaurantController {
 
-    @Autowired
-    private RestaurantService restaurantService;
+    private final RestaurantService restaurantService;
 
     @GetMapping
-    public List<Restaurant> getAllRestaurants() {
-        return restaurantService.getAllRestaurants();
+    public ResponseEntity<List<RestaurantResDto>> getAllRestaurants() {
+        List<RestaurantResDto> restaurantResDtos = restaurantService.getAllRestaurants();
+        return new ResponseEntity<>(restaurantResDtos, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public Restaurant getRestaurantById(@PathVariable Long id) {
-        return restaurantService.getRestaurantById(id);
+    public ResponseEntity<RestaurantResDto> getRestaurantById(@PathVariable Long id) {
+        RestaurantResDto restaurant = restaurantService.getRestaurantById(id);
+        return new ResponseEntity<>(restaurant, HttpStatus.OK);
     }
 
     @PostMapping
-    public Restaurant createRestaurant(@RequestBody Restaurant restaurant) {
-        return restaurantService.createRestaurant(restaurant);
+    public ResponseEntity<Long> createRestaurant(@RequestBody RestaurantReqDto restaurantReqDto) {
+        Long restaurantId = restaurantService.createRestaurant(restaurantReqDto);
+        return new ResponseEntity<>(restaurantId, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public Restaurant updateRestaurant(@PathVariable Long id, @RequestBody Restaurant restaurant) {
-        return restaurantService.updateRestaurant(id, restaurant);
+    public ResponseEntity<RestaurantResDto> updateRestaurant(@PathVariable Long id, @RequestBody RestaurantReqDto restaurant) {
+        RestaurantResDto restaurantResDto = restaurantService.updateRestaurant(id, restaurant);
+        return new ResponseEntity<>(restaurantResDto, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -39,9 +48,10 @@ public class RestaurantController {
         restaurantService.deleteRestaurant(id);
     }
     @GetMapping("/nearby")
-    public List<Restaurant> getNearbyRestaurants(
+    public ResponseEntity<List<RestaurantResDto>> getNearbyRestaurants(
             @RequestParam double latitude,
             @RequestParam double longitude) {
-        return restaurantService.getNearbyRestaurants(latitude, longitude);
+        List<RestaurantResDto> restaurantResDtos = restaurantService.getNearbyRestaurants(latitude, longitude);
+        return new ResponseEntity<>(restaurantResDtos, HttpStatus.OK);
     }
 }

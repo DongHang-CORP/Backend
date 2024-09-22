@@ -7,12 +7,13 @@ import org.example.food.domain.user.User;
 import org.example.food.domain.user.dto.UserReqDto;
 import org.example.food.domain.user.dto.UserResDto;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface UserMapper {
     User toEntity(UserReqDto userReqDto);
 
     UserResDto toUserDto(Restaurant restaurant);
 
-    void updateUserFromDto(UserReqDto userReqDto, User user);
+    void updateUserFromDto(UserReqDto userReqDto, @MappingTarget User user);
 }

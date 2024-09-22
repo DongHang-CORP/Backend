@@ -1,15 +1,18 @@
 package org.example.food.service;
 
 import org.example.food.domain.restaurant.Restaurant;
+import org.example.food.domain.restaurant.dto.RestaurantReqDto;
+import org.example.food.domain.restaurant.dto.RestaurantResDto;
 
 import java.util.List;
 
 public interface RestaurantService {
-    List<Restaurant> getAllRestaurants();
-    Restaurant getRestaurantById(Long id);
-    Restaurant createRestaurant(Restaurant restaurant);
-    Restaurant updateRestaurant(Long id, Restaurant restaurant);
+    List<RestaurantResDto> getAllRestaurants();
+    RestaurantResDto getRestaurantById(Long id);
+    Long createRestaurant(RestaurantReqDto restaurantReqDto);
+    RestaurantResDto updateRestaurant(Long id, RestaurantReqDto restaurantReqDto);
     void deleteRestaurant(Long id);
-    List<Restaurant> getNearbyRestaurants(double userLat, double userLon);
+    Restaurant findRestaurantById(Long id);
+    List<RestaurantResDto> getNearbyRestaurants(double userLat, double userLon);
 
 }

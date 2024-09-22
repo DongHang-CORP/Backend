@@ -1,4 +1,4 @@
-package org.example.food.domain;
+package org.example.food.domain.video;
 
 public enum Category {
              chicken,

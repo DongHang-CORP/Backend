@@ -3,7 +3,7 @@ package org.example.food.domain.restaurant;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.example.food.domain.Category;
+import org.example.food.domain.video.Category;
 
 @Entity // JPA 엔티티임을 나타냅니다.
 @Getter
