@@ -9,5 +9,4 @@ import java.util.Optional;
 
 public interface VideoRepository extends JpaRepository<Video, Long> {
     List<Video> findByRestaurantId(Long restaurantId);
-    
 }
