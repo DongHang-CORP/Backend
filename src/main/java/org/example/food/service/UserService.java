@@ -1,6 +1,6 @@
 package org.example.food.service;
 
-import org.example.food.entity.User;
+import org.example.food.domain.user.User;
 
 public interface UserService {
     User getUserById(Long id);

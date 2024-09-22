@@ -1,6 +1,6 @@
 package org.example.food.controller;
 
-import org.example.food.entity.Video;
+import org.example.food.domain.video.Video;
 import org.example.food.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

@@ -1,7 +1,7 @@
 package org.example.food.service;
 
-import org.example.food.entity.Restaurant;
-import org.example.food.entity.Video;
+import org.example.food.domain.restaurant.Restaurant;
+import org.example.food.domain.video.Video;
 import org.example.food.repository.RestaurantRepository;
 import org.example.food.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;

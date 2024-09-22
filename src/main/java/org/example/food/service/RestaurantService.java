@@ -1,6 +1,6 @@
 package org.example.food.service;
 
-import org.example.food.entity.Restaurant;
+import org.example.food.domain.restaurant.Restaurant;
 
 import java.util.List;
 

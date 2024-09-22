@@ -1,8 +1,9 @@
-package org.example.food.entity;
+package org.example.food.domain.video;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.example.food.domain.restaurant.Restaurant;
 
 @Entity
 @Getter

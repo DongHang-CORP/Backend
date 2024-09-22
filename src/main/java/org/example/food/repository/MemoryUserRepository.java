@@ -1,7 +1,6 @@
 package org.example.food.repository;
 
-import org.example.food.entity.User;
-import org.springframework.stereotype.Repository;
+import org.example.food.domain.user.User;
 
 import java.util.HashMap;
 import java.util.Map;

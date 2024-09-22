@@ -1,6 +1,6 @@
 package org.example.food.service;
 
-import org.example.food.entity.Restaurant;
+import org.example.food.domain.restaurant.Restaurant;
 import org.example.food.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

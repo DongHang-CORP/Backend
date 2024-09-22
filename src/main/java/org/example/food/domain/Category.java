@@ -1,4 +1,4 @@
-package org.example.food.entity;
+package org.example.food.domain;
 
 public enum Category {
              chicken,

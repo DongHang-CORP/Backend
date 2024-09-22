@@ -1,4 +1,4 @@
-package org.example.food.entity;
+package org.example.food.domain.user;
 
 import jakarta.persistence.*;
 import lombok.Getter;

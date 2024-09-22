@@ -1,6 +1,6 @@
 package org.example.food.service;
 
-import org.example.food.entity.Video;
+import org.example.food.domain.video.Video;
 import java.util.List;
 
 public interface VideoService {

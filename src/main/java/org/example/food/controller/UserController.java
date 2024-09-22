@@ -1,6 +1,6 @@
 package org.example.food.controller;
 
-import org.example.food.entity.User;
+import org.example.food.domain.user.User;
 import org.example.food.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
