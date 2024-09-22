@@ -4,7 +4,6 @@ import org.example.food.entity.Restaurant;
 import org.example.food.entity.Video;
 import org.example.food.repository.RestaurantRepository;
 import org.example.food.repository.VideoRepository;
-import org.example.food.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
