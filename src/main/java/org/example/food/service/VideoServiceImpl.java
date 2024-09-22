@@ -2,6 +2,7 @@ package org.example.food.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.food.domain.restaurant.Restaurant;
+import org.example.food.domain.user.User;
 import org.example.food.domain.video.Video;
 import org.example.food.domain.video.dto.VideoReqDto;
 import org.example.food.domain.video.dto.VideoResDto;
@@ -11,17 +12,20 @@ import org.example.food.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class VideoServiceImpl implements VideoService {
 
     private final VideoRepository videoRepository;
     private final RestaurantRepository restaurantRepository;
     private final VideoMapper videoMapper;
+    private final FileService fileService;
     private static final double SEARCH_RADIUS = 5.0; // 5km 반경
 
     @Override
@@ -39,19 +43,19 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public Long createVideo(VideoReqDto videoReqDto) {
+    public Long createVideo(VideoReqDto videoReqDto, User user, MultipartFile file) {
+        String filePath = null;
+
+        if (file != null && !file.isEmpty()) {
+            String fileName = "uploads/" + file.getOriginalFilename();
+            filePath = fileService.putFileToBucket(file, fileName, null);
+        }
         Video video = videoMapper.toEntity(videoReqDto);
+        video.setVideoUrl(filePath);
+        video.setUser(user);
+
         videoRepository.save(video);
         return video.getId();
-    }
-
-    @Override
-    @Transactional
-    public VideoResDto updateVideo(Long id, VideoReqDto videoReqDto) {
-        Video video = findVideoById(id);
-        videoMapper.updateVideoFromDto(videoReqDto, video);
-        videoRepository.save(video);
-        return videoMapper.toVideoDto(video);
     }
 
     @Override

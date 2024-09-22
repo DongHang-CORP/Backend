@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.food.domain.restaurant.Restaurant;
+import org.example.food.domain.user.User;
 
 @Entity
 @Getter
@@ -14,7 +15,9 @@ public class Video {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
@@ -27,9 +30,9 @@ public class Video {
 
     public Video() {}
 
-    public Video(Long id, Long userId, Restaurant restaurant, String title, String content, int viewCount, String videoUrl) {
+    public Video(Long id, User userId, Restaurant restaurant, String title, String content, int viewCount, String videoUrl) {
         this.id = id;
-        this.userId = userId;
+        this.user = userId;
         this.restaurant = restaurant;
         this.title = title;
         this.content = content;

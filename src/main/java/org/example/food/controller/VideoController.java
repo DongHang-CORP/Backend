@@ -1,6 +1,7 @@
 package org.example.food.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.food.domain.user.User;
 import org.example.food.domain.video.Video;
 import org.example.food.domain.video.dto.VideoReqDto;
 import org.example.food.domain.video.dto.VideoResDto;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -31,15 +33,13 @@ public class VideoController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createVideo(@RequestBody VideoReqDto videoReqDto) {
-        Long videoId = videoService.createVideo(videoReqDto);
+    public ResponseEntity<Long> createVideo(@RequestPart(required = false) MultipartFile file, @RequestPart VideoReqDto videoReqDto) {
+        //유저 정보 가져오기 로직
+        //String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        //UserEntity user = userRepository.findByEmail(name);
+        User user = new User(); //임시
+        Long videoId = videoService.createVideo(videoReqDto, user, file);
         return new ResponseEntity<>(videoId, HttpStatus.OK);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<VideoResDto> updateVideo(@PathVariable Long id, @RequestBody VideoReqDto videoReqDto) {
-        VideoResDto videoResDto = videoService.updateVideo(id, videoReqDto);
-        return new ResponseEntity<>(videoResDto, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
