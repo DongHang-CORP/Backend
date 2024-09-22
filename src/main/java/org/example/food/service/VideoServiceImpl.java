@@ -1,51 +1,57 @@
 package org.example.food.service;
 
+import lombok.RequiredArgsConstructor;
 import org.example.food.domain.restaurant.Restaurant;
 import org.example.food.domain.video.Video;
+import org.example.food.domain.video.dto.VideoReqDto;
+import org.example.food.domain.video.dto.VideoResDto;
+import org.example.food.domain.video.mapper.VideoMapper;
 import org.example.food.repository.RestaurantRepository;
 import org.example.food.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class VideoServiceImpl implements VideoService {
 
-    @Autowired
-    private VideoRepository videoRepository;
-
-    @Autowired
-    private RestaurantRepository restaurantRepository;
+    private final VideoRepository videoRepository;
+    private final RestaurantRepository restaurantRepository;
+    private final VideoMapper videoMapper;
     private static final double SEARCH_RADIUS = 5.0; // 5km 반경
 
     @Override
-    public List<Video> getAllVideos() {
-        return videoRepository.findAll();
+    public List<VideoResDto> getAllVideos() {
+        List<Video> videos = videoRepository.findAll();
+        return videos.stream()
+                .map(videoMapper::toVideoDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Video getVideoById(Long id) {
-        return videoRepository.findById(id).orElseThrow();
+    public VideoResDto getVideoById(Long id) {
+        Video video = findVideoById(id);
+        return videoMapper.toVideoDto(video);
     }
 
     @Override
-    public Video createVideo(Video video) {
-        return videoRepository.save(video);
+    public Long createVideo(VideoReqDto videoReqDto) {
+        Video video = videoMapper.toEntity(videoReqDto);
+        videoRepository.save(video);
+        return video.getId();
     }
 
     @Override
-    public Video updateVideo(Long id, Video video) {
-        Video existingVideo = videoRepository.findById(id).orElseThrow();
-        if (existingVideo != null) {
-            existingVideo.setTitle(video.getTitle());
-            existingVideo.setContent(video.getContent());
-            existingVideo.setViewCount(video.getViewCount());
-            existingVideo.setVideoUrl(video.getVideoUrl());
-            return videoRepository.save(existingVideo);
-        }
-        return null;
+    @Transactional
+    public VideoResDto updateVideo(Long id, VideoReqDto videoReqDto) {
+        Video video = findVideoById(id);
+        videoMapper.updateVideoFromDto(videoReqDto, video);
+        videoRepository.save(video);
+        return videoMapper.toVideoDto(video);
     }
 
     @Override
@@ -53,8 +59,10 @@ public class VideoServiceImpl implements VideoService {
         videoRepository.deleteById(id);
     }
 
+
+
     @Override
-    public List<Video> getNearbyVideos(double userLat, double userLon) {
+    public List<VideoResDto> getNearbyVideos(double userLat, double userLon) {
         // 모든 비디오 가져오기
         List<Video> allVideos = videoRepository.findAll();
 
@@ -62,14 +70,18 @@ public class VideoServiceImpl implements VideoService {
         return allVideos.stream()
                 .filter(video -> {
                     Restaurant restaurant = restaurantRepository.findById(video.getId()).orElseThrow();
-                    if (restaurant == null) return false;
-
                     double distance = LocationService.calculateDistance(
                             userLat, userLon, restaurant.getLatitude(), restaurant.getLongitude()
                     );
                     return distance <= SEARCH_RADIUS;  // 5km 반경 내
                 })
+                .map(videoMapper::toVideoDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Video findVideoById(Long id) {
+        return videoRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("비디오가 없습니다."));
     }
 }
 
