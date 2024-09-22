@@ -11,5 +11,4 @@ public class VideoReqDto {
     private String title;
     private String content;
     private int viewCount;
-    private String videoUrl;
 }
