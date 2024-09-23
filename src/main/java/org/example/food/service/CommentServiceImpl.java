@@ -19,11 +19,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class CommentServiceImpl {
+public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final VideoRepository videoRepository;
     private final CommentMapper commentMapper;
 
+    @Override
     public Long writeComment(Long boardId, CommentReqDto commentDto, User user) {
         Comment comment = commentMapper.toEntity(commentDto);
         Video video = videoRepository.findById(boardId).orElseThrow(() -> {
@@ -34,13 +35,14 @@ public class CommentServiceImpl {
         commentRepository.save(comment);
         return comment.getId();
     }
-
+    @Override
     public List<CommentResDto> getComments(Long boardId) {
         List<Comment> comments = commentRepository.findAllByVideoId(boardId);
         return comments.stream()
                 .map(commentMapper::toCommentDto)
                 .collect(Collectors.toList());
     }
+    @Override
     public void deleteComment(Long commentId) {
         commentRepository.deleteById(commentId);
     }
