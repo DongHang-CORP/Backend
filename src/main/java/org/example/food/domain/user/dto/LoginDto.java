@@ -5,8 +5,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class JoinDto {
+public class LoginDto {
     private String email;
-    private String username;
-    private String nickname;
 }
