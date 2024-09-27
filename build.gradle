@@ -1,0 +1,128 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.2'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'jacoco'
+}
+
+group = 'org.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    //aws 의존성
+    implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.2'
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.100'
+    //mapper
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    runtimeOnly 'com.h2database:h2'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+
+tasks.named('test') {
+    useJUnitPlatform()
+    finalizedBy 'jacocoTestReport'
+
+}
+
+jacoco {
+    // jacoco 버전 설정
+    toolVersion = '0.8.10'
+}
+jacocoTestReport {
+    reports {
+        // 리포트 형식 html로 설정하기
+        html.destination file("$buildDir/jacoco/report")
+    }
+}
+jacocoTestReport {
+
+    getClassDirectories().setFrom(
+            files(classDirectories.files.collect {
+                fileTree(
+                        dir: it,
+                        exclude: [
+                                '**/Application.class',
+                                '**/dto/*.class',
+                                '**/repository/*.class'
+                        ]
+                )
+            }
+            )
+    )
+    finalizedBy 'jacocoTestCoverageVerification'
+
+
+}
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.00
+            }
+        }
+
+        // 룰 생성
+        rule {
+            // 룰 on/off
+            enabled = true
+
+            // 룰을 체크할 단위 설정
+            element = 'CLASS'
+
+            // 커버리지 제외 범위 설정
+            excludes = [
+                    '**.Application',
+                    '**.dto.*',
+                    '**.vo.*'
+            ]
+
+            // 브랜치 커버리지 기준치 설정 (ex : 70%)
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.00
+            }
+
+            // 라인 커버리지 기준치 설정 (ex : 50%)
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.00
+            }
+
+            // 코드 라인수 기준치 설정 (ex : 공백 제외 100줄)
+            limit {
+                counter = 'LINE'
+                value = 'TOTALCOUNT'
+                maximum = 100
+            }
+        }
+    }
+}
+

@@ -1,0 +1,19 @@
+package org.example.food.service;
+
+import org.example.food.domain.user.User;
+import org.example.food.domain.video.Video;
+import org.example.food.domain.video.dto.VideoReqDto;
+import org.example.food.domain.video.dto.VideoResDto;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
+public interface VideoService {
+    List<VideoResDto> getAllVideos();
+    VideoResDto getVideoById(Long id);
+    Long createVideo(VideoReqDto videoReqDto, User user, MultipartFile file);
+    void deleteVideo(Long id);
+    List<VideoResDto> getNearbyVideos(double userLat, double userLon);
+    Video findVideoById(Long id);
+
+}
