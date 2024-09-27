@@ -10,6 +10,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Table(name = "users")
 public class User {
 
     @Id
@@ -24,9 +25,6 @@ public class User {
 
     private String profileImage;
 
-    @Column(nullable = false)
-    private String password;
-
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -35,11 +33,11 @@ public class User {
 
     public User() {}
 
-    public User(Long id, String username, String profileImage, String password, String email, List<Video> videos) {
+    public User(Long id, String username, String nickname, String profileImage, String email, List<Video> videos) {
         this.id = id;
         this.username = username;
+        this.nickname = nickname;
         this.profileImage = profileImage;
-        this.password = password;
         this.email = email;
         this.videos = videos;
     }
