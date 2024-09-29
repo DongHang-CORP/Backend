@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
-    private UserRepository userRepository;
-    private UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
     public UserResDto getUserById(Long id) {
@@ -44,5 +44,11 @@ public class UserServiceImpl implements UserService{
     @Override
     public User findUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+    }
+
+    @Override
+    public UserResDto findUserByEmail(String email){
+        User findUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("이메일이 존재하지 않습니다"));
+        return userMapper.toUserDto(findUser);
     }
 }

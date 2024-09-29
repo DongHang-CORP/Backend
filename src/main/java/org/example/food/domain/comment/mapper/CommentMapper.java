@@ -1,5 +1,6 @@
 package org.example.food.domain.comment.mapper;
 
+import org.example.food.common.config.CentralMapperConfig;
 import org.example.food.domain.comment.Comment;
 import org.example.food.domain.comment.dto.CommentReqDto;
 import org.example.food.domain.comment.dto.CommentResDto;
@@ -9,7 +10,7 @@ import org.example.food.domain.user.dto.UserResDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
+@Mapper(config = CentralMapperConfig.class, componentModel = "spring")
 public interface CommentMapper {
     Comment toEntity(CommentReqDto commentReqDto);
 

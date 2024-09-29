@@ -2,6 +2,7 @@ package org.example.food.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.food.domain.user.User;
+import org.example.food.domain.user.dto.LoginDto;
 import org.example.food.domain.user.dto.UserReqDto;
 import org.example.food.domain.user.dto.UserResDto;
 import org.example.food.service.UserService;
@@ -16,6 +17,14 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+
+    @PostMapping("/login")
+    public ResponseEntity<UserResDto> findUserByEmail(@RequestBody LoginDto loginDto) {
+        String email = loginDto.getEmail();
+        UserResDto user = userService.findUserByEmail(email);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<UserResDto> getUserById(@PathVariable Long id) {
         UserResDto userResDto = userService.getUserById(id);
