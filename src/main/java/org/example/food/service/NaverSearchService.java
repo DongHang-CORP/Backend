@@ -1,5 +1,11 @@
 package org.example.food.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +20,22 @@ import java.util.Map;
 @Service
 public class NaverSearchService {
 
+    private static final Logger logger = LoggerFactory.getLogger(NaverSearchService.class);
+
     @Value("${naver.api.client-id}")
     private String clientId;
 
     @Value("${naver.api.client-secret}")
     private String clientSecret;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     public String searchLocal(String query) {
         String encodedQuery = null;
         try {
             encodedQuery = URLEncoder.encode(query, "UTF-8");
         } catch (UnsupportedEncodingException e) {
+            logger.error("검색어 인코딩 실패", e);
             throw new RuntimeException("검색어 인코딩 실패", e);
         }
 
@@ -33,7 +45,34 @@ public class NaverSearchService {
         requestHeaders.put("X-Naver-Client-Id", clientId);
         requestHeaders.put("X-Naver-Client-Secret", clientSecret);
 
-        return get(apiURL, requestHeaders);
+        String response = get(apiURL, requestHeaders);
+        return removeBTagsFromTitles(response);
+    }
+
+    private String removeBTagsFromTitles(String jsonResponse) {
+        try {
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+            if (!rootNode.has("items") || !rootNode.get("items").isArray()) {
+                logger.warn("예상치 못한 JSON 구조: 'items' 배열이 없거나 배열이 아닙니다.");
+                return jsonResponse; // 원본 응답 반환
+            }
+
+            ArrayNode itemsNode = (ArrayNode) rootNode.get("items");
+
+            for (JsonNode item : itemsNode) {
+                if (item.has("title")) {
+                    String title = item.get("title").asText();
+                    String cleanTitle = title.replaceAll("</?b>", "");
+                    ((ObjectNode) item).put("title", cleanTitle);
+                }
+            }
+
+            return objectMapper.writeValueAsString(rootNode);
+        } catch (Exception e) {
+            logger.error("JSON 처리 중 오류 발생: " + e.getMessage(), e);
+            logger.debug("처리하려던 JSON: " + jsonResponse);
+            return jsonResponse; // 오류 발생 시 원본 응답 반환
+        }
     }
 
     private String get(String apiUrl, Map<String, String> requestHeaders) {
@@ -48,9 +87,12 @@ public class NaverSearchService {
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 return readBody(con.getInputStream());
             } else {
-                return readBody(con.getErrorStream());
+                String errorResponse = readBody(con.getErrorStream());
+                logger.error("API 요청 실패. 응답 코드: " + responseCode + ", 에러 메시지: " + errorResponse);
+                return errorResponse;
             }
         } catch (IOException e) {
+            logger.error("API 요청과 응답 실패", e);
             throw new RuntimeException("API 요청과 응답 실패", e);
         } finally {
             con.disconnect();
@@ -62,9 +104,11 @@ public class NaverSearchService {
             URL url = new URL(apiUrl);
             return (HttpURLConnection) url.openConnection();
         } catch (MalformedURLException e) {
-            throw new RuntimeException("API URL이 잘못되었습니다. : " + apiUrl, e);
+            logger.error("API URL이 잘못되었습니다: " + apiUrl, e);
+            throw new RuntimeException("API URL이 잘못되었습니다: " + apiUrl, e);
         } catch (IOException e) {
-            throw new RuntimeException("연결이 실패했습니다. : " + apiUrl, e);
+            logger.error("연결이 실패했습니다: " + apiUrl, e);
+            throw new RuntimeException("연결이 실패했습니다: " + apiUrl, e);
         }
     }
 
@@ -81,6 +125,7 @@ public class NaverSearchService {
 
             return responseBody.toString();
         } catch (IOException e) {
+            logger.error("API 응답을 읽는 데 실패했습니다.", e);
             throw new RuntimeException("API 응답을 읽는 데 실패했습니다.", e);
         }
     }
