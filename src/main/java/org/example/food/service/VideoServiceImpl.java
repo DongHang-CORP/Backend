@@ -43,15 +43,8 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public Long createVideo(VideoReqDto videoReqDto, User user, MultipartFile file) {
-        String filePath = null;
-
-        if (file != null && !file.isEmpty()) {
-            String fileName = "uploads/" + file.getOriginalFilename();
-            filePath = fileService.putFileToBucket(file, fileName, null);
-        }
+    public Long createVideo(VideoReqDto videoReqDto, User user) {
         Video video = videoMapper.toEntity(videoReqDto);
-        video.setVideoUrl(filePath);
         video.setUser(user);
 
         videoRepository.save(video);

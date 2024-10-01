@@ -33,12 +33,12 @@ public class VideoController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createVideo(@RequestPart(required = false) MultipartFile file, @RequestPart VideoReqDto videoReqDto) {
+    public ResponseEntity<Long> createVideo(@RequestPart VideoReqDto videoReqDto) {
         //유저 정보 가져오기 로직
         //String name = SecurityContextHolder.getContext().getAuthentication().getName();
         //UserEntity user = userRepository.findByEmail(name);
         User user = new User(); //임시
-        Long videoId = videoService.createVideo(videoReqDto, user, file);
+        Long videoId = videoService.createVideo(videoReqDto, user);
         return new ResponseEntity<>(videoId, HttpStatus.OK);
     }
 
