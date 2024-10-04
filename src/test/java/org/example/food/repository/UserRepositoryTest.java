@@ -47,11 +47,10 @@ class UserRepositoryTest {
         userRepository.save(user);
 
         // when
-        Optional<User> foundUser = userRepository.findByEmail("findme@example.com");
+        User foundUser = userRepository.findByEmail("findme@example.com");
 
         // then
-        assertThat(foundUser).isPresent();
-        assertThat(foundUser.get().getEmail()).isEqualTo("findme@example.com");
+        assertThat(foundUser.getEmail()).isEqualTo("findme@example.com");
     }
 
     @Test
@@ -110,10 +109,9 @@ class UserRepositoryTest {
         userRepository.save(user);
 
         // when
-        Optional<User> foundUser = userRepository.findByUsername("namequeryuser");
+        User foundUser = userRepository.findByUsername("namequeryuser");
 
         // then
-        assertThat(foundUser).isPresent();
-        assertThat(foundUser.get().getUsername()).isEqualTo("namequeryuser");
+        assertThat(foundUser.getUsername()).isEqualTo("namequeryuser");
     }
 }

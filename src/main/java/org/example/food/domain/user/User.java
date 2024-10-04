@@ -31,6 +31,8 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Video> videos;
 
+    private String role;
+
     public User() {}
 
     public User(Long id, String username, String nickname, String profileImage, String email, List<Video> videos) {

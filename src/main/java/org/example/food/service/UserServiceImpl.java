@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserResDto findUserByEmail(String email){
-        User findUser = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("이메일이 존재하지 않습니다"));
+        User findUser = userRepository.findByEmail(email);
         return userMapper.toUserDto(findUser);
     }
 }
