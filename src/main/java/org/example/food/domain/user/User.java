@@ -1,7 +1,9 @@
 package org.example.food.domain.user;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.food.domain.video.Video;
 
@@ -10,6 +12,8 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "users")
 public class User {
 
@@ -33,14 +37,4 @@ public class User {
 
     private String role;
 
-    public User() {}
-
-    public User(Long id, String username, String nickname, String profileImage, String email, List<Video> videos) {
-        this.id = id;
-        this.username = username;
-        this.nickname = nickname;
-        this.profileImage = profileImage;
-        this.email = email;
-        this.videos = videos;
-    }
 }

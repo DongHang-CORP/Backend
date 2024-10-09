@@ -13,7 +13,6 @@ public interface VideoService {
     VideoResDto getVideoById(Long id);
     Long createVideo(VideoReqDto videoReqDto, User user);
     void deleteVideo(Long id);
-    List<VideoResDto> getNearbyVideos(double userLat, double userLon);
     Video findVideoById(Long id);
 
 }

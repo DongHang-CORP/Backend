@@ -2,12 +2,15 @@ package org.example.food.domain.video.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.food.domain.video.Category;
 
 @Data
 @NoArgsConstructor
 public class VideoReqDto {
-    private Long restaurant_id;
-    private String title;
+    private String restaurant;
+    private String url;
     private String content;
-    private int viewCount;
+    private Category category;
+    private double lat;
+    private double lng;
 }

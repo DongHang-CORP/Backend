@@ -7,12 +7,7 @@ import org.example.food.domain.video.Category;
 @Data
 @NoArgsConstructor
 public class RestaurantReqDto {
-    private String imageUrl;
     private String name;
-    private String address;
-    private Category category;
-    private String rating;
-    private String phoneNumber;
     private double latitude;
     private double longitude;
 }
