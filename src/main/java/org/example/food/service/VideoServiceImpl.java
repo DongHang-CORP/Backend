@@ -60,17 +60,15 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public List<VideoResDto> getNearbyVideos(double userLat, double userLon) {
-        // 모든 비디오 가져오기
         List<Video> allVideos = videoRepository.findAll();
 
-        // 비디오가 속한 레스토랑의 위치를 기준으로 필터링
         return allVideos.stream()
                 .filter(video -> {
                     Restaurant restaurant = restaurantRepository.findById(video.getId()).orElseThrow();
                     double distance = LocationService.calculateDistance(
                             userLat, userLon, restaurant.getLatitude(), restaurant.getLongitude()
                     );
-                    return distance <= SEARCH_RADIUS;  // 5km 반경 내
+                    return distance <= SEARCH_RADIUS;
                 })
                 .map(videoMapper::toVideoDto)
                 .collect(Collectors.toList());

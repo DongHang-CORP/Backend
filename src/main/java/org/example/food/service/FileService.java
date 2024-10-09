@@ -29,30 +29,37 @@ public class FileService {
     private String localLocation;
 
     public String imageUpload(MultipartFile file) throws IOException {
-
-        // 원래 파일 이름을 가져옵니다.
         String fileName = file.getOriginalFilename();
-
-        // 확장자를 추출합니다.
+        if (fileName == null) {
+            throw new IllegalArgumentException("File name cannot be null");
+        }
         String ext = fileName.substring(fileName.lastIndexOf("."));
-
-        // 고유한 UUID와 확장자를 결합하여 파일 이름을 만듭니다.
         String uuidFileName = UUID.randomUUID() + ext;
         String localPath = localLocation + uuidFileName;
 
-        // 로컬 파일로 저장합니다.
+        // 로컬 파일로 저장
         File localFile = new File(localPath);
-        file.transferTo(localFile);
+        try {
+            file.transferTo(localFile);
+        } catch (IOException e) {
+            System.err.println("Error saving file to local disk: " + e.getMessage());
+            throw e;
+        }
 
-        // S3에 파일을 업로드합니다.
-        ncpStorageConfig.objectStorageClient()
-                .putObject(new PutObjectRequest(bucket, uuidFileName, localFile)
-                        .withCannedAcl(CannedAccessControlList.PublicRead));
+        // S3에 파일 업로드
+        try {
+            ncpStorageConfig.objectStorageClient()
+                    .putObject(new PutObjectRequest(bucket, uuidFileName, localFile)
+                            .withCannedAcl(CannedAccessControlList.PublicRead));
+        } catch (Exception e) {
+            System.err.println("Error uploading file to S3: " + e.getMessage());
+            throw e;
+        }
 
-        // 업로드된 파일의 URL을 가져옵니다.
+        // 업로드된 파일의 URL 가져오기
         String s3Url = ncpStorageConfig.objectStorageClient().getUrl(bucket, uuidFileName).toString();
 
-        // 로컬 파일을 삭제합니다.
+        // 로컬 파일 삭제
         localFile.delete();
 
         return s3Url;

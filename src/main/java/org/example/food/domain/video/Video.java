@@ -1,7 +1,9 @@
 package org.example.food.domain.video;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.food.domain.restaurant.Restaurant;
 import org.example.food.domain.user.User;
@@ -9,6 +11,8 @@ import org.example.food.domain.user.User;
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Video {
 
     @Id
@@ -23,20 +27,13 @@ public class Video {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    private String title;
     private String content;
-    private int viewCount;
-    private String videoUrl;
+    private String url;
 
-    public Video() {}
+    @Enumerated(EnumType.STRING)
+    private Category category;
 
-    public Video(Long id, User userId, Restaurant restaurant, String title, String content, int viewCount, String videoUrl) {
-        this.id = id;
-        this.user = userId;
-        this.restaurant = restaurant;
-        this.title = title;
-        this.content = content;
-        this.viewCount = viewCount;
-        this.videoUrl = videoUrl;
-    }
+    private String lat;
+    private String lng;
+
 }
