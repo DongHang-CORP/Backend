@@ -47,11 +47,4 @@ public class RestaurantController {
     public void deleteRestaurant(@PathVariable Long id) {
         restaurantService.deleteRestaurant(id);
     }
-    @GetMapping("/nearby")
-    public ResponseEntity<List<RestaurantResDto>> getNearbyRestaurants(
-            @RequestParam double latitude,
-            @RequestParam double longitude) {
-        List<RestaurantResDto> restaurantResDtos = restaurantService.getNearbyRestaurants(latitude, longitude);
-        return new ResponseEntity<>(restaurantResDtos, HttpStatus.OK);
-    }
 }

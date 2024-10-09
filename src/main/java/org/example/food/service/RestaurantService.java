@@ -13,6 +13,4 @@ public interface RestaurantService {
     RestaurantResDto updateRestaurant(Long id, RestaurantReqDto restaurantReqDto);
     void deleteRestaurant(Long id);
     Restaurant findRestaurantById(Long id);
-    List<RestaurantResDto> getNearbyRestaurants(double userLat, double userLon);
-
 }

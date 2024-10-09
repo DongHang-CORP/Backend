@@ -12,7 +12,6 @@ public class NaverSearchController {
 
     private final NaverSearchService naverSearchService;
 
-    // GET /search?query=엽기떡볶이
     @GetMapping("/search")
     public String search(@RequestParam String query) {
         return naverSearchService.searchLocal(query);

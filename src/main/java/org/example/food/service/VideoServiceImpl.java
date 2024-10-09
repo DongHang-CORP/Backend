@@ -6,13 +6,10 @@ import org.example.food.domain.user.User;
 import org.example.food.domain.video.Video;
 import org.example.food.domain.video.dto.VideoReqDto;
 import org.example.food.domain.video.dto.VideoResDto;
-import org.example.food.domain.video.mapper.VideoMapper;
 import org.example.food.repository.RestaurantRepository;
 import org.example.food.repository.VideoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,59 +21,67 @@ public class VideoServiceImpl implements VideoService {
 
     private final VideoRepository videoRepository;
     private final RestaurantRepository restaurantRepository;
-    private final VideoMapper videoMapper;
-    private final FileService fileService;
-    private static final double SEARCH_RADIUS = 5.0; // 5km 반경
+
+    private VideoResDto toVideoDto(Video video) {
+        if (video == null) {
+            return null;
+        }
+        VideoResDto dto = new VideoResDto();
+        dto.setVideoId(video.getId());
+        dto.setUrl(video.getUrl());
+        dto.setContent(video.getContent());
+        dto.setCategory(video.getCategory());
+        dto.setRestaurant(video.getRestaurant().getName());
+        return dto;
+    }
+
+    private Video toEntity(VideoReqDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        Video video = new Video();
+        video.setUrl(dto.getUrl());
+        video.setContent(dto.getContent());
+        video.setCategory(dto.getCategory());
+
+        Restaurant restaurant = restaurantRepository.findByName(dto.getRestaurant());
+        video.setRestaurant(restaurant);
+
+        return video;
+    }
 
     @Override
     public List<VideoResDto> getAllVideos() {
         List<Video> videos = videoRepository.findAll();
         return videos.stream()
-                .map(videoMapper::toVideoDto)
+                .map(this::toVideoDto) // 매핑 로직 호출
                 .collect(Collectors.toList());
     }
 
     @Override
     public VideoResDto getVideoById(Long id) {
         Video video = findVideoById(id);
-        return videoMapper.toVideoDto(video);
+        return toVideoDto(video);
     }
 
     @Override
+    @Transactional
     public Long createVideo(VideoReqDto videoReqDto, User user) {
-        Video video = videoMapper.toEntity(videoReqDto);
+        Video video = toEntity(videoReqDto);
         video.setUser(user);
-
         videoRepository.save(video);
         return video.getId();
     }
 
     @Override
+    @Transactional
     public void deleteVideo(Long id) {
         videoRepository.deleteById(id);
     }
 
-
-
-    @Override
-    public List<VideoResDto> getNearbyVideos(double userLat, double userLon) {
-        List<Video> allVideos = videoRepository.findAll();
-
-        return allVideos.stream()
-                .filter(video -> {
-                    Restaurant restaurant = restaurantRepository.findById(video.getId()).orElseThrow();
-                    double distance = LocationService.calculateDistance(
-                            userLat, userLon, restaurant.getLatitude(), restaurant.getLongitude()
-                    );
-                    return distance <= SEARCH_RADIUS;
-                })
-                .map(videoMapper::toVideoDto)
-                .collect(Collectors.toList());
-    }
 
     @Override
     public Video findVideoById(Long id) {
         return videoRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("비디오가 없습니다."));
     }
 }
-

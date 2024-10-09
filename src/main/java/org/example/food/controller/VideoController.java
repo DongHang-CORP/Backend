@@ -1,10 +1,12 @@
 package org.example.food.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.food.domain.restaurant.Restaurant;
 import org.example.food.domain.user.User;
 import org.example.food.domain.video.Video;
 import org.example.food.domain.video.dto.VideoReqDto;
 import org.example.food.domain.video.dto.VideoResDto;
+import org.example.food.repository.RestaurantRepository;
 import org.example.food.repository.UserRepository;
 import org.example.food.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ public class VideoController {
 
     private final VideoService videoService;
     private final UserRepository userRepository;
+    private final RestaurantRepository restaurantRepository;
     @GetMapping
     public ResponseEntity<List<VideoResDto>> getAllVideos() {
         List<VideoResDto> videoResDtos = videoService.getAllVideos();
@@ -43,6 +46,13 @@ public class VideoController {
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 인증되지 않음
         }
+
+        Restaurant restaurant = new Restaurant();
+        restaurant.setName(videoReqDto.getRestaurant());
+        restaurant.setLat(videoReqDto.getLat());
+        restaurant.setLng(videoReqDto.getLng());
+        restaurantRepository.save(restaurant);
+
         Long videoId = videoService.createVideo(videoReqDto, user);
 
         return new ResponseEntity<>(videoId, HttpStatus.OK);
@@ -55,11 +65,5 @@ public class VideoController {
         User user = userRepository.findByEmail(name);
         videoService.deleteVideo(id);
     }
-    @GetMapping("/nearby")
-    public ResponseEntity<List<VideoResDto>> getNearbyVideos(
-            @RequestParam double latitude,
-            @RequestParam double longitude) {
-        List<VideoResDto> videoResDtos = videoService.getNearbyVideos(latitude, longitude);
-        return new ResponseEntity<>(videoResDtos, HttpStatus.OK);
-    }
+
 }
