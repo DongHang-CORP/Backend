@@ -6,7 +6,7 @@ import org.example.food.common.exception.BaseExceptionType;
 
 @RequiredArgsConstructor
 public class VideoException extends BaseException {
-    private final RestaurantExceptionType exceptionType;
+    private final VideoExceptionType exceptionType;
     @Override
     public BaseExceptionType exceptionType() {
         return exceptionType;

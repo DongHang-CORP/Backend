@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.food.domain.restaurant.Restaurant;
 import org.example.food.domain.restaurant.dto.RestaurantReqDto;
 import org.example.food.domain.restaurant.dto.RestaurantResDto;
+import org.example.food.domain.video.dto.VideoReqDto;
+import org.example.food.exception.RestaurantException;
+import org.example.food.exception.RestaurantExceptionType;
 import org.example.food.repository.RestaurantRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,9 +95,23 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurantRepository.deleteById(id);
     }
 
+    @Transactional
+    public Restaurant findOrCreateRestaurant(VideoReqDto videoReqDto) {
+        Restaurant restaurant = restaurantRepository.findByName(videoReqDto.getRestaurant());
+        if (restaurant == null) {
+            restaurant = new Restaurant();
+            restaurant.setName(videoReqDto.getRestaurant());
+            restaurant.setLat(videoReqDto.getLat());
+            restaurant.setLng(videoReqDto.getLng());
+            restaurant.setCategory(videoReqDto.getCategory());
+            restaurantRepository.save(restaurant);
+        }
+        return restaurant;
+    }
+
     @Override
     public Restaurant findRestaurantById(Long id) {
-        return restaurantRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("음식점이 존재하지 않습니다"));
+        return restaurantRepository.findById(id).orElseThrow(() -> new RestaurantException(RestaurantExceptionType.NOT_FOUND_RESTAURANT));
     }
 
 }

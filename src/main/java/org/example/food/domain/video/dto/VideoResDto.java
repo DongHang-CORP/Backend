@@ -1,11 +1,12 @@
 package org.example.food.domain.video.dto;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.food.domain.video.Category;
 
 @Data
-@NoArgsConstructor
+@Builder
 public class VideoResDto {
     private Long videoId;
     private String userNickname;
