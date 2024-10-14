@@ -2,6 +2,7 @@ package org.example.food.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.food.common.config.NCPStorageConfig;
@@ -31,7 +32,7 @@ public class FileService {
         }
 
         // 파일 이름 및 경로 설정
-        String fileName = UUID.randomUUID() + ".png"; // 원하는 확장자에 맞게 수정
+        String fileName = UUID.randomUUID() + ".mp4"; // 원하는 확장자에 맞게 수정
         String localPath = localLocation + fileName;
 
         // 로컬 파일로 저장
@@ -59,5 +60,26 @@ public class FileService {
         new File(localPath).delete();
 
         return s3Url;
+    }
+
+    public void deleteFileFromBucket(String url) {
+        // URL에서 파일명 추출
+        String fileName = extractFileNameFromUrl(url);
+
+        // 삭제 요청 생성 및 실행
+        try {
+            DeleteObjectRequest request = new DeleteObjectRequest(bucket, fileName);
+            ncpStorageConfig.objectStorageClient().deleteObject(request);
+            System.out.println("파일 삭제 성공: " + fileName);
+        } catch (Exception e) {
+            System.err.println("S3에서 파일 삭제 중 오류 발생: " + e.getMessage());
+            throw new RuntimeException("파일 삭제 실패", e);
+        }
+    }
+
+    // URL에서 파일명 추출하는 메서드
+    private String extractFileNameFromUrl(String url) {
+        String[] split = url.split("/");
+        return split[split.length - 1];  // URL의 마지막 부분이 파일명
     }
 }
