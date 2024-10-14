@@ -28,6 +28,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         dto.setName(restaurant.getName());
         dto.setLatitude(restaurant.getLat());
         dto.setLongitude(restaurant.getLng());
+        dto.setCategory(restaurant.getCategory());
         return dto;
     }
 
@@ -40,6 +41,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurant.setName(dto.getName());
         restaurant.setLat(dto.getLatitude());
         restaurant.setLat(dto.getLongitude());
+        restaurant.setCategory(dto.getCategory());
         return restaurant;
     }
 
@@ -51,6 +53,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurant.setName(dto.getName());
         restaurant.setLat(dto.getLatitude());
         restaurant.setLng(dto.getLongitude());
+        restaurant.setCategory(dto.getCategory());
     }
 
     @Override
