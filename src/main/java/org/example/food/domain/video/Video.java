@@ -32,8 +32,4 @@ public class Video {
 
     @Enumerated(EnumType.STRING)
     private Category category;
-
-    private String lat;
-    private String lng;
-
 }

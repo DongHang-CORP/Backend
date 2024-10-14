@@ -39,13 +39,20 @@ public class VideoController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createVideo(@RequestPart VideoReqDto videoReqDto) {
+    public ResponseEntity<Long> createVideo(@RequestBody VideoReqDto videoReqDto) {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(name);
+//        User user = userRepository.findByEmail(name);
+        User user = new User(1L,
+                "johndoe",                    // username
+                "johnny123",                  // nickname
+                "profile.jpg",                // profileImage
+                "john.doe@example.com",       // email
+                "USER"                        // role
+        );
 
-        if (user == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 인증되지 않음
-        }
+//        if (user == null) {
+//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 인증되지 않음
+//        }
 
         Restaurant restaurant = new Restaurant();
         restaurant.setName(videoReqDto.getRestaurant());
