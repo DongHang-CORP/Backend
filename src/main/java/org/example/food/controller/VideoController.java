@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/videos")
+@RequestMapping("/api/videos")
 public class VideoController {
 
     private final VideoService videoService;
