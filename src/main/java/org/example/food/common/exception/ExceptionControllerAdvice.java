@@ -1,31 +1,42 @@
 package org.example.food.common.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
-public class ExceptionControllerAdvice {
-    private final Logger log = LoggerFactory.getLogger(getClass());
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-    private static final String UNEXPECTED_ERROR_CODE = "1";
+@Slf4j
+@RestControllerAdvice
+@RequiredArgsConstructor
+public class ExceptionControllerAdvice {
+
     @ExceptionHandler(BaseException.class)
-    ResponseEntity<ExceptionResponse> handleException(BaseException e) {
+    ResponseEntity<ExceptionResponse> handleException(HttpServletRequest request, BaseException e) {
         BaseExceptionType type = e.exceptionType();
-        log.warn("[WARN] 예외 내용: {}", type.errorMessage());
-        ExceptionResponse response =
-                new ExceptionResponse(String.valueOf(type.errorCode()), type.errorMessage());
-        return new ResponseEntity<>(response, type.httpStatus());
+        log.info("잘못된 요청이 들어왔습니다. URI: {},  내용:  {}", request.getRequestURI(), type.errorMessage());
+        return ResponseEntity.status(type.httpStatus())
+                .body(new ExceptionResponse(type.errorMessage()));
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    ResponseEntity<ExceptionResponse> handleMissingParams(MissingServletRequestParameterException e) {
+        String errorMessage = e.getParameterName() + " 값이 누락 되었습니다.";
+        log.info("잘못된 요청이 들어왔습니다. 내용:  {}", errorMessage);
+        return ResponseEntity.status(BAD_REQUEST)
+                .body(new ExceptionResponse(errorMessage));
     }
 
     @ExceptionHandler(Exception.class)
-    ResponseEntity<ExceptionResponse> handleException(Exception e) {
-        log.error("[ERROR] 원인을 알 수 없는 예외", e);
-        ExceptionResponse response =
-                new ExceptionResponse(UNEXPECTED_ERROR_CODE, "알 수 없는 오류가 발생했습니다.");
+    ResponseEntity<ExceptionResponse> handleException(HttpServletRequest request, Exception e) {
+        log.error("예상하지 못한 예외가 발생했습니다. URI: {}, ", request.getRequestURI(), e);
         return ResponseEntity.internalServerError()
-                .body(response);
+                .body(new ExceptionResponse("알 수 없는 오류가 발생했습니다."));
     }
 }

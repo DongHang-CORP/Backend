@@ -6,7 +6,8 @@ import org.example.food.domain.user.User;
 import org.example.food.domain.video.Video;
 import org.example.food.domain.video.dto.VideoReqDto;
 import org.example.food.domain.video.dto.VideoResDto;
-import org.example.food.repository.RestaurantRepository;
+import org.example.food.exception.VideoException;
+import org.example.food.exception.VideoExceptionType;
 import org.example.food.repository.VideoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,55 +21,49 @@ import java.util.stream.Collectors;
 public class VideoServiceImpl implements VideoService {
 
     private final VideoRepository videoRepository;
-    private final RestaurantRepository restaurantRepository;
+    private final RestaurantServiceImpl restaurantService; // Restaurant 관련 로직 분리
 
+    // Video -> VideoResDto 변환
     private VideoResDto toVideoDto(Video video) {
         if (video == null) {
             return null;
         }
-        VideoResDto dto = new VideoResDto();
-        dto.setVideoId(video.getId());
-        dto.setUrl(video.getUrl());
-        dto.setContent(video.getContent());
-        dto.setCategory(video.getCategory());
-        dto.setRestaurant(video.getRestaurant().getName());
-        dto.setRestaurantId(video.getRestaurant().getId());
-        return dto;
+        return VideoResDto.builder()
+                .videoId(video.getId())
+                .url(video.getUrl())
+                .content(video.getContent())
+                .category(video.getCategory())
+                .restaurant(video.getRestaurant().getName())
+                .restaurantId(video.getRestaurant().getId())
+                .userNickname(video.getUser().getNickname())
+                .build();
     }
 
+    // VideoReqDto -> Video 변환
     private Video toEntity(VideoReqDto dto) {
         if (dto == null) {
             return null;
         }
-        Video video = new Video();
-        video.setUrl(dto.getUrl());
-        video.setContent(dto.getContent());
-        video.setCategory(dto.getCategory());
-
-        Restaurant restaurant = restaurantRepository.findByName(dto.getRestaurant());
-        video.setRestaurant(restaurant);
-
-        return video;
+        Restaurant restaurant = restaurantService.findOrCreateRestaurant(dto);
+        return Video.builder()
+                .url(dto.getUrl())
+                .content(dto.getContent())
+                .category(dto.getCategory())
+                .restaurant(restaurant)
+                .build();
     }
 
     @Override
     public List<VideoResDto> getAllVideos() {
-        List<Video> videos = videoRepository.findAll();
-        return videos.stream()
-                .map(video -> {
-                    VideoResDto videoResDto = toVideoDto(video);
-                    videoResDto.setUserNickname(video.getUser().getNickname()); // userId 설정
-                    return videoResDto;
-                })
+        return videoRepository.findAll().stream()
+                .map(this::toVideoDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public VideoResDto getVideoById(Long id) {
         Video video = findVideoById(id);
-        VideoResDto videoResDto = toVideoDto(video);
-        videoResDto.setUserNickname(video.getUser().getNickname());
-        return videoResDto;
+        return toVideoDto(video);
     }
 
     @Override
@@ -86,9 +81,9 @@ public class VideoServiceImpl implements VideoService {
         videoRepository.deleteById(id);
     }
 
-
     @Override
     public Video findVideoById(Long id) {
-        return videoRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("비디오가 없습니다."));
+        return videoRepository.findById(id)
+                .orElseThrow(() -> new VideoException(VideoExceptionType.NOT_FOUND_VIDEO));
     }
 }

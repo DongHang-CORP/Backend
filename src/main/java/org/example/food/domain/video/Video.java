@@ -1,16 +1,13 @@
 package org.example.food.domain.video;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.example.food.domain.restaurant.Restaurant;
 import org.example.food.domain.user.User;
-
 @Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Video {

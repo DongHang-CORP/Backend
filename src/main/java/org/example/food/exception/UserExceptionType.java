@@ -7,11 +7,6 @@ public enum UserExceptionType implements BaseExceptionType {
     ;
 
     @Override
-    public int errorCode() {
-        return 0;
-    }
-
-    @Override
     public HttpStatus httpStatus() {
         return null;
     }

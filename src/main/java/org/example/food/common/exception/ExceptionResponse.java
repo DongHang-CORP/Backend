@@ -1,6 +1,13 @@
 package org.example.food.common.exception;
 
-public record ExceptionResponse(
-        String code,
-        String message) {
+
+import lombok.Data;
+
+@Data
+public class ExceptionResponse {
+    private final String message;
+
+    public ExceptionResponse(String message) {
+        this.message = message;
+    }
 }
