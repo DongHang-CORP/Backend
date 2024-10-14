@@ -1,7 +1,6 @@
 package org.example.food.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.example.food.domain.restaurant.Restaurant;
 import org.example.food.domain.user.User;
 import org.example.food.domain.video.Video;
@@ -19,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/videos")
@@ -41,33 +39,19 @@ public class VideoController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createVideo(@RequestBody VideoReqDto videoReqDto) {
+    public ResponseEntity<Long> createVideo(@RequestPart VideoReqDto videoReqDto) {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
-//        User user = userRepository.findByEmail(name);
-        User user = new User(1L,
-                "johndoe",                    // username
-                "박민수ㅂㅅ",                  // nickname
-                "profile.jpg",                // profileImage
-                "john.doe@example.com",       // email
-                "USER"                        // role
-        );
-        userRepository.save(user);
-//        if (user == null) {
-//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 인증되지 않음
-//        }
+        User user = userRepository.findByEmail(name);
 
-        if(restaurantRepository.findByName(videoReqDto.getRestaurant())!=null){
-
-        }else {
-            log.info("video category: {}", videoReqDto.getCategory());
-            Restaurant restaurant = new Restaurant();
-            restaurant.setName(videoReqDto.getRestaurant());
-            restaurant.setLat(videoReqDto.getLat());
-            restaurant.setLng(videoReqDto.getLng());
-
-            restaurant.setCategory(videoReqDto.getCategory());
-            restaurantRepository.save(restaurant);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 인증되지 않음
         }
+
+        Restaurant restaurant = new Restaurant();
+        restaurant.setName(videoReqDto.getRestaurant());
+        restaurant.setLat(videoReqDto.getLat());
+        restaurant.setLng(videoReqDto.getLng());
+        restaurantRepository.save(restaurant);
 
         Long videoId = videoService.createVideo(videoReqDto, user);
 

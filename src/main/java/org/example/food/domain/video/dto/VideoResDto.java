@@ -8,10 +8,12 @@ import org.example.food.domain.video.Category;
 @NoArgsConstructor
 public class VideoResDto {
     private Long videoId;
-    private String userNickname;
+    private Long userId;
     private Long restaurantId;
     private String restaurant;
     private String url;
     private String content;
     private Category category;
+    private double lat;
+    private double lng;
 }

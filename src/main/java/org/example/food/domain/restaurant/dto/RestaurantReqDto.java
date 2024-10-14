@@ -10,5 +10,4 @@ public class RestaurantReqDto {
     private String name;
     private double latitude;
     private double longitude;
-    private Category category;
 }

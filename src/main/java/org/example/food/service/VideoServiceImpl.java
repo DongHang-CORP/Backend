@@ -32,7 +32,6 @@ public class VideoServiceImpl implements VideoService {
         dto.setContent(video.getContent());
         dto.setCategory(video.getCategory());
         dto.setRestaurant(video.getRestaurant().getName());
-        dto.setRestaurantId(video.getRestaurant().getId());
         return dto;
     }
 
@@ -55,20 +54,14 @@ public class VideoServiceImpl implements VideoService {
     public List<VideoResDto> getAllVideos() {
         List<Video> videos = videoRepository.findAll();
         return videos.stream()
-                .map(video -> {
-                    VideoResDto videoResDto = toVideoDto(video);
-                    videoResDto.setUserNickname(video.getUser().getNickname()); // userId 설정
-                    return videoResDto;
-                })
+                .map(this::toVideoDto) // 매핑 로직 호출
                 .collect(Collectors.toList());
     }
 
     @Override
     public VideoResDto getVideoById(Long id) {
         Video video = findVideoById(id);
-        VideoResDto videoResDto = toVideoDto(video);
-        videoResDto.setUserNickname(video.getUser().getNickname());
-        return videoResDto;
+        return toVideoDto(video);
     }
 
     @Override
