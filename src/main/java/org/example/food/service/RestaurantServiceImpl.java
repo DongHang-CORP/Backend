@@ -10,6 +10,7 @@ import org.example.food.exception.RestaurantException;
 import org.example.food.exception.RestaurantExceptionType;
 import org.example.food.repository.RestaurantQueryRepository;
 import org.example.food.repository.RestaurantRepository;
+import org.example.food.repository.VideoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final RestaurantQueryRepository restaurantQueryRepository;
+    private final VideoRepository videoRepository;
 
 
     // Entity -> DTO 변환
@@ -30,12 +32,14 @@ public class RestaurantServiceImpl implements RestaurantService {
         if (restaurant == null) {
             return null;
         }
+        long videoCount = videoRepository.countByRestaurantId(restaurant.getId());
         RestaurantResDto dto = new RestaurantResDto();
         dto.setRestaurantId(restaurant.getId());
         dto.setName(restaurant.getName());
         dto.setLatitude(restaurant.getLat());
         dto.setLongitude(restaurant.getLng());
         dto.setCategory(restaurant.getCategory());
+        dto.setVideoCount(videoCount);
         return dto;
     }
 

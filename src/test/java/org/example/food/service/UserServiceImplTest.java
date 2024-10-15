@@ -5,7 +5,6 @@ import org.example.food.domain.user.User;
 import org.example.food.domain.user.dto.LoginDto;
 import org.example.food.domain.user.dto.UserReqDto;
 import org.example.food.domain.user.dto.UserResDto;
-import org.example.food.domain.user.mapper.UserMapper;
 import org.example.food.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
