@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.food.domain.restaurant.Restaurant;
 import org.example.food.domain.restaurant.dto.RestaurantReqDto;
 import org.example.food.domain.restaurant.dto.RestaurantResDto;
+import org.example.food.domain.video.Category;
 import org.example.food.domain.video.dto.VideoReqDto;
 import org.example.food.exception.RestaurantException;
 import org.example.food.exception.RestaurantExceptionType;
@@ -117,8 +118,13 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurantRepository.findById(id).orElseThrow(() -> new RestaurantException(RestaurantExceptionType.NOT_FOUND_RESTAURANT));
     }
 
-    public List<Restaurant> findRestaurantsByLocation(double userLat, double userLon, double radius) {
-        return restaurantQueryRepository.findRestaurantsByLocation(userLat, userLon, radius);
+    @Override
+    public List<RestaurantResDto> getNearbyRestaurants(double userLat, double userLon, double radius, List<Category> categories) {
+        List<Restaurant> restaurants = restaurantQueryRepository.findRestaurantsByLocation(userLat, userLon, radius, categories);
+        return restaurants.stream()
+                .map(this::toRestaurantDto)
+                .collect(Collectors.toList());
     }
+
 
 }

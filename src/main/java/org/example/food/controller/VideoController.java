@@ -83,11 +83,11 @@ public class VideoController {
     }
 
     @GetMapping("/nearby")
-    public ResponseEntity<List<Video>> getNearbyVideos(
+    public ResponseEntity<List<VideoResDto>> getNearbyVideos(
             @RequestParam double userLat,
             @RequestParam double userLon,
             @RequestParam(defaultValue = "5") double radius) {
-        List<Video> videos = videoService.getNearbyVideos(userLat, userLon, radius);
+        List<VideoResDto> videos = videoService.getNearbyVideos(userLat, userLon, radius);
         return ResponseEntity.ok(videos);
     }
 

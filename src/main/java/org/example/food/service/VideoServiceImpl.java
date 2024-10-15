@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class VideoServiceImpl implements VideoService {
 
     private final VideoRepository videoRepository;
-    private final RestaurantServiceImpl restaurantService; // Restaurant 관련 로직 분리
+    private final RestaurantService restaurantService; // Restaurant 관련 로직 분리
     private final VideoQueryRepository videoQueryRepository;
 
     // Video -> VideoResDto 변환
@@ -89,7 +89,11 @@ public class VideoServiceImpl implements VideoService {
                 .orElseThrow(() -> new VideoException(VideoExceptionType.NOT_FOUND_VIDEO));
     }
 
-    public List<Video> getNearbyVideos(double userLat, double userLon, double radius) {
-        return videoQueryRepository.findVideosByLocation(userLat, userLon, radius);
+    @Override
+    public List<VideoResDto> getNearbyVideos(double userLat, double userLon, double radius) {
+        List<Video> video = videoQueryRepository.findVideosByLocation(userLat, userLon, radius);
+        return video.stream()
+                .map(this::toVideoDto)
+                .collect(Collectors.toList());
     }
 }
