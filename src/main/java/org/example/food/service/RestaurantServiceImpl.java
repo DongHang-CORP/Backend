@@ -7,6 +7,7 @@ import org.example.food.domain.restaurant.dto.RestaurantResDto;
 import org.example.food.domain.video.dto.VideoReqDto;
 import org.example.food.exception.RestaurantException;
 import org.example.food.exception.RestaurantExceptionType;
+import org.example.food.repository.RestaurantQueryRepository;
 import org.example.food.repository.RestaurantRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,8 @@ import java.util.stream.Collectors;
 public class RestaurantServiceImpl implements RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final RestaurantQueryRepository restaurantQueryRepository;
+
 
     // Entity -> DTO 변환
     private RestaurantResDto toRestaurantDto(Restaurant restaurant) {
@@ -112,6 +115,10 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public Restaurant findRestaurantById(Long id) {
         return restaurantRepository.findById(id).orElseThrow(() -> new RestaurantException(RestaurantExceptionType.NOT_FOUND_RESTAURANT));
+    }
+
+    public List<Restaurant> findRestaurantsByLocation(double userLat, double userLon, double radius) {
+        return restaurantQueryRepository.findRestaurantsByLocation(userLat, userLon, radius);
     }
 
 }
