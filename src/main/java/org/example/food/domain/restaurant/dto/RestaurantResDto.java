@@ -12,4 +12,5 @@ public class RestaurantResDto {
     private double latitude;
     private double longitude;
     private Category category;
+    private Long videoCount;
 }

@@ -5,6 +5,7 @@ import org.example.food.domain.user.dto.LoginDto;
 import org.example.food.domain.user.dto.UserReqDto;
 import org.example.food.domain.user.dto.UserResDto;
 import org.example.food.service.UserService;
+import org.example.food.testbase.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,18 +21,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class UserControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
+class UserControllerTest extends IntegrationTest {
 
     @MockBean
     private UserService userService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Test
     void findUserByEmail() throws Exception {
