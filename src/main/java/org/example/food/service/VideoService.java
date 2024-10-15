@@ -14,5 +14,6 @@ public interface VideoService {
     Long createVideo(VideoReqDto videoReqDto, User user);
     void deleteVideo(Long id);
     Video findVideoById(Long id);
+    List<Video> getNearbyVideos(double userLat, double userLon, double radius);
 
 }
