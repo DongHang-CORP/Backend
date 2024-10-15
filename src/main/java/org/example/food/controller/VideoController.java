@@ -82,4 +82,13 @@ public class VideoController {
         videoService.deleteVideo(id);
     }
 
+    @GetMapping("/nearby")
+    public ResponseEntity<List<VideoResDto>> getNearbyVideos(
+            @RequestParam double userLat,
+            @RequestParam double userLon,
+            @RequestParam(defaultValue = "5") double radius) {
+        List<VideoResDto> videos = videoService.getNearbyVideos(userLat, userLon, radius);
+        return ResponseEntity.ok(videos);
+    }
+
 }

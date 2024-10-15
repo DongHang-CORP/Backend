@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.example.food.domain.restaurant.Restaurant;
 import org.example.food.domain.restaurant.dto.RestaurantReqDto;
 import org.example.food.domain.restaurant.dto.RestaurantResDto;
+import org.example.food.domain.video.Category;
 import org.example.food.domain.video.dto.VideoReqDto;
 import org.example.food.exception.RestaurantException;
 import org.example.food.exception.RestaurantExceptionType;
+import org.example.food.repository.RestaurantQueryRepository;
 import org.example.food.repository.RestaurantRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 public class RestaurantServiceImpl implements RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final RestaurantQueryRepository restaurantQueryRepository;
+
 
     // Entity -> DTO 변환
     private RestaurantResDto toRestaurantDto(Restaurant restaurant) {
@@ -113,5 +117,14 @@ public class RestaurantServiceImpl implements RestaurantService {
     public Restaurant findRestaurantById(Long id) {
         return restaurantRepository.findById(id).orElseThrow(() -> new RestaurantException(RestaurantExceptionType.NOT_FOUND_RESTAURANT));
     }
+
+    @Override
+    public List<RestaurantResDto> getNearbyRestaurants(double userLat, double userLon, double radius, List<Category> categories) {
+        List<Restaurant> restaurants = restaurantQueryRepository.findRestaurantsByLocation(userLat, userLon, radius, categories);
+        return restaurants.stream()
+                .map(this::toRestaurantDto)
+                .collect(Collectors.toList());
+    }
+
 
 }

@@ -8,6 +8,7 @@ import org.example.food.domain.video.dto.VideoReqDto;
 import org.example.food.domain.video.dto.VideoResDto;
 import org.example.food.exception.VideoException;
 import org.example.food.exception.VideoExceptionType;
+import org.example.food.repository.VideoQueryRepository;
 import org.example.food.repository.VideoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,8 @@ import java.util.stream.Collectors;
 public class VideoServiceImpl implements VideoService {
 
     private final VideoRepository videoRepository;
-    private final RestaurantServiceImpl restaurantService; // Restaurant 관련 로직 분리
+    private final RestaurantService restaurantService; // Restaurant 관련 로직 분리
+    private final VideoQueryRepository videoQueryRepository;
 
     // Video -> VideoResDto 변환
     private VideoResDto toVideoDto(Video video) {
@@ -85,5 +87,13 @@ public class VideoServiceImpl implements VideoService {
     public Video findVideoById(Long id) {
         return videoRepository.findById(id)
                 .orElseThrow(() -> new VideoException(VideoExceptionType.NOT_FOUND_VIDEO));
+    }
+
+    @Override
+    public List<VideoResDto> getNearbyVideos(double userLat, double userLon, double radius) {
+        List<Video> video = videoQueryRepository.findVideosByLocation(userLat, userLon, radius);
+        return video.stream()
+                .map(this::toVideoDto)
+                .collect(Collectors.toList());
     }
 }

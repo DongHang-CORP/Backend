@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.food.domain.restaurant.Restaurant;
 import org.example.food.domain.restaurant.dto.RestaurantReqDto;
 import org.example.food.domain.restaurant.dto.RestaurantResDto;
+import org.example.food.domain.video.Category;
 import org.example.food.service.RestaurantService;
+import org.example.food.service.RestaurantServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +19,7 @@ import java.util.List;
 @RequestMapping("/api/restaurants")
 public class RestaurantController {
 
-    private final RestaurantService restaurantService;
+    private final RestaurantServiceImpl restaurantService;
 
     @GetMapping
     public ResponseEntity<List<RestaurantResDto>> getAllRestaurants() {
@@ -46,5 +48,16 @@ public class RestaurantController {
     @DeleteMapping("/{id}")
     public void deleteRestaurant(@PathVariable Long id) {
         restaurantService.deleteRestaurant(id);
+    }
+
+    @GetMapping("/nearby")
+    public ResponseEntity<List<RestaurantResDto>> getNearbyRestaurants(
+            @RequestParam double userLat,
+            @RequestParam double userLon,
+            @RequestParam(defaultValue = "5") double radius,
+            @RequestParam(required = false) List<Category> categories) { // 카테고리 선택 (선택적)
+
+        List<RestaurantResDto> restaurants = restaurantService.getNearbyRestaurants(userLat, userLon, radius, categories);
+        return ResponseEntity.ok(restaurants);
     }
 }
