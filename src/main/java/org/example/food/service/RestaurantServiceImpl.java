@@ -1,11 +1,14 @@
 package org.example.food.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.food.domain.restaurant.Restaurant;
+import org.example.food.domain.restaurant.dto.RestaurantDetailsDto;
 import org.example.food.domain.restaurant.dto.RestaurantReqDto;
 import org.example.food.domain.restaurant.dto.RestaurantResDto;
 import org.example.food.domain.video.Category;
 import org.example.food.domain.video.dto.VideoReqDto;
+import org.example.food.domain.video.dto.VideoResDto;
 import org.example.food.exception.RestaurantException;
 import org.example.food.exception.RestaurantExceptionType;
 import org.example.food.repository.RestaurantQueryRepository;
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class RestaurantServiceImpl implements RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
@@ -76,9 +80,22 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public RestaurantResDto getRestaurantById(Long id) {
+    public RestaurantDetailsDto getRestaurantById(Long id) {
         Restaurant restaurant = findRestaurantById(id);
-        return toRestaurantDto(restaurant);
+        // 연관된 비디오들을 VideoResDto로 변환
+        List<VideoResDto> videoDtos = restaurant.getVideos().stream()
+                .map(video -> VideoResDto.builder()
+                        .videoId(video.getId())
+                        .userNickname(video.getUser().getNickname())  // User의 닉네임을 가져옴
+                        .restaurantId(restaurant.getId())  // Restaurant ID를 가져옴
+                        .restaurant(restaurant.getName())  // Restaurant 이름을 가져옴
+                        .url(video.getUrl())  // Video의 URL을 가져옴
+                        .content(video.getContent())  // Video의 컨텐츠를 가져옴
+                        .category(video.getCategory())  // Video의 카테고리를 가져옴
+                        .build())
+                .collect(Collectors.toList());
+
+        return new RestaurantDetailsDto(restaurant, videoDtos);
     }
 
     @Override
@@ -129,6 +146,5 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .map(this::toRestaurantDto)
                 .collect(Collectors.toList());
     }
-
 
 }

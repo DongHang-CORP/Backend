@@ -3,12 +3,20 @@ package org.example.food.common.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.food.exception.RestaurantException;
+import org.example.food.exception.VideoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -38,5 +46,25 @@ public class ExceptionControllerAdvice {
         log.error("예상하지 못한 예외가 발생했습니다. URI: {}, ", request.getRequestURI(), e);
         return ResponseEntity.internalServerError()
                 .body(new ExceptionResponse("알 수 없는 오류가 발생했습니다."));
+    }
+
+    @ExceptionHandler(VideoException.class)
+    public ResponseEntity<Map<String, Object>> handleVideoException(VideoException ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("error", ex.exceptionType().errorMessage());
+        body.put("path", request.getDescription(false).replace("uri=", ""));
+
+        return new ResponseEntity<>(body, ex.exceptionType().httpStatus());
+    }
+
+    @ExceptionHandler(RestaurantException.class)
+    public ResponseEntity<Map<String, Object>> handleRestaurantException(RestaurantException ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("error", ex.exceptionType().errorMessage());
+        body.put("path", request.getDescription(false).replace("uri=", ""));
+
+        return new ResponseEntity<>(body, ex.exceptionType().httpStatus());
     }
 }

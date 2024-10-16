@@ -2,6 +2,7 @@ package org.example.food.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.food.domain.restaurant.Restaurant;
+import org.example.food.domain.restaurant.dto.RestaurantDetailsDto;
 import org.example.food.domain.restaurant.dto.RestaurantReqDto;
 import org.example.food.domain.restaurant.dto.RestaurantResDto;
 import org.example.food.domain.video.Category;
@@ -28,8 +29,8 @@ public class RestaurantController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RestaurantResDto> getRestaurantById(@PathVariable Long id) {
-        RestaurantResDto restaurant = restaurantService.getRestaurantById(id);
+    public ResponseEntity<RestaurantDetailsDto> getRestaurantById(@PathVariable Long id) {
+        RestaurantDetailsDto restaurant = restaurantService.getRestaurantById(id);
         return new ResponseEntity<>(restaurant, HttpStatus.OK);
     }
 
