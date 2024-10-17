@@ -1,6 +1,7 @@
 package org.example.food.domain.video;
 
 public enum Category {
+             blackCooker,
              chicken,
              bakery,
              cafeAndDesert,

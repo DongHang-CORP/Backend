@@ -22,7 +22,7 @@ public class VideoQueryRepository {
 
     // 하버사인 공식으로 반경 내의 비디오 검색
     public List<Video> findVideosByLocation(double userLat, double userLon, double radius) {
-        QVideo video = QVideo.video; // QueryDSL Q타입 객체
+        QVideo video = QVideo.video;
         return queryFactory
                 .selectFrom(video)
                 .where(distanceWithinRadius(userLat, userLon, video.restaurant.lat, video.restaurant.lng, radius))
@@ -46,7 +46,7 @@ public class VideoQueryRepository {
                                                      NumberPath<Double> restaurantLat,
                                                      NumberPath<Double> restaurantLon) {
         return Expressions.numberTemplate(Double.class,
-                "({0} * acos(cos(radians({1})) * cos(radians({2})) * cos(radians({3}) - radians({4})) + sin(radians({1})) * sin(radians({2}))) )",
+                "({0} * acos(cos(radians({1})) * cos(radians({2} / 1000000.0)) * cos(radians({3} / 1000000.0) - radians({4})) + sin(radians({1})) * sin(radians({2} / 1000000.0))) )",
                 EARTH_RADIUS_KM, userLat, restaurantLat, userLon, restaurantLon);
     }
 }
