@@ -31,6 +31,9 @@ public class Video {
     @Enumerated(EnumType.STRING)
     private Category category;
 
+    @Version
+    private Long version;
+
     public void addLikeCount(int likeCount){
         this.likeCount += likeCount;
     }

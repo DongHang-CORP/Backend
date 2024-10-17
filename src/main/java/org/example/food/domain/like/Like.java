@@ -11,6 +11,7 @@ import org.example.food.domain.video.Video;
 @Entity
 @NoArgsConstructor
 @Getter
+@Table(name = "likes")
 public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

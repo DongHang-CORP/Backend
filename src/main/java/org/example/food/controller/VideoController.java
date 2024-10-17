@@ -9,6 +9,7 @@ import org.example.food.domain.video.dto.VideoReqDto;
 import org.example.food.domain.video.dto.VideoResDto;
 import org.example.food.repository.RestaurantRepository;
 import org.example.food.repository.UserRepository;
+import org.example.food.service.LikeService;
 import org.example.food.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

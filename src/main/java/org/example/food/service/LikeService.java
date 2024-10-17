@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.food.domain.like.Like;
 import org.example.food.domain.user.User;
 import org.example.food.domain.video.Video;
+import org.example.food.exception.VideoException;
+import org.example.food.exception.VideoExceptionType;
+import org.example.food.repository.LikeRepository;
 import org.example.food.repository.VideoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,16 +19,16 @@ import java.util.Optional;
 @Slf4j
 public class LikeService {
     private final VideoRepository videoRepository;
+    private final LikeRepository likeRepository;
 
     @Transactional
-    public String like(User user, Long postid) {
-        Optional<Video> video = videoRepository.findById(postid);
-        if (video.isEmpty()) throw new IllegalArgumentException("해당 공지사항이 존재하지 않습니다.");
+    public void like(User user, Long videoId) {
+        Optional<Video> video = videoRepository.findByIdWithOptimisticLock(videoId);
+        if (video.isEmpty()) throw new VideoException(VideoExceptionType.NOT_FOUND_VIDEO);
         Video boardPost = video.get();
-        log.info("좋아요 기능");
 
         Optional<Like> foundLike = null;
-        foundLike = likeRepository.findByUserAndBoardPost(user, boardPost);
+        foundLike = likeRepository.findByUserAndVideo(user, boardPost);
 
         if (foundLike.isEmpty()) {
             Like like = Like.builder()
@@ -34,11 +37,9 @@ public class LikeService {
                     .build();
             likeRepository.save(like);
             boardPost.addLikeCount(1);
-            return "좋아요!";
         } else {
-            likeRepository.deleteByUserAndBoardPost(user, boardPost);
+            likeRepository.deleteByUserAndVideo(user, boardPost);
             boardPost.addLikeCount(-1);
-            return "좋아요 취소!";
         }
     }
 }
