@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -46,7 +47,7 @@ public class VideoController {
 //        User user = userRepository.findByEmail(name);
         User user = new User(1L,
                 "johndoe",                    // username
-                "박민수ㅂㅅ",                  // nickname
+                "박민수",                  // nickname
                 "profile.jpg",                // profileImage
                 "john.doe@example.com",       // email
                 "USER"                        // role
@@ -89,6 +90,19 @@ public class VideoController {
             @RequestParam(defaultValue = "5") double radius) {
         List<VideoResDto> videos = videoService.getNearbyVideos(userLat, userLon, radius);
         return ResponseEntity.ok(videos);
+    }
+
+    @PostMapping("/{videoId}/like")
+    public ResponseEntity<Void> likeNotice(@PathVariable Long videoId){
+        User user = new User(1L,
+                "johndoe",                    // username
+                "박민수",                  // nickname
+                "profile.jpg",                // profileImage
+                "john.doe@example.com",       // email
+                "USER"                        // role
+        );
+        likeService.like(user, videoId);
+        return ResponseEntity.ok().build();
     }
 
 }
