@@ -29,6 +29,7 @@ public class VideoController {
     private final VideoService videoService;
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
+    private final LikeService likeService;
     @GetMapping
     public ResponseEntity<List<VideoResDto>> getAllVideos() {
         List<VideoResDto> videoResDtos = videoService.getAllVideos();
