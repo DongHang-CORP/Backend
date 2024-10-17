@@ -38,6 +38,7 @@ public class VideoServiceImpl implements VideoService {
                 .restaurant(video.getRestaurant().getName())
                 .restaurantId(video.getRestaurant().getId())
                 .userNickname(video.getUser().getNickname())
+                .likeCount(video.getLikeCount())
                 .build();
     }
 

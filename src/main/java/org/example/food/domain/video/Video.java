@@ -26,7 +26,15 @@ public class Video {
 
     private String content;
     private String url;
+    private int likeCount;
 
     @Enumerated(EnumType.STRING)
     private Category category;
+
+    @Version
+    private Long version;
+
+    public void addLikeCount(int likeCount){
+        this.likeCount += likeCount;
+    }
 }
