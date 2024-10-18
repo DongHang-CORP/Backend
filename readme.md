@@ -1,5 +1,6 @@
 # Readme for test
 
-|Datetime| Test name |
-|-|-----------|
+| Datetime         | Test name |
+|------------------|-----------|
 | 2024.10.18 18:30 | test 1    |
+| 2024.10.18 20:00 | test 2    |
