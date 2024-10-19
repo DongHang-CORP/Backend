@@ -21,7 +21,7 @@ pipeline {
             steps {
                 script {
                     echo "Stage: Build started"
-                    sh './gradlew clean build'
+                    sh './gradlew clean bootjar'
                     echo "Stage: Build completed"
                 }
             }
