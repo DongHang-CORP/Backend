@@ -9,7 +9,8 @@ pipeline {
             steps {
                 // 깃허브 저장소에서 코드 가져오기
                 checkout scm
-                sh 'echo "Current branch: $(git rev-parse --abbrev-ref HEAD)"'
+                // sh 'echo "Current branch: $(git rev-parse --abbrev-ref HEAD)"'
+                sh 'echo "Current branch: ${env.GIT_BRANCH}"'
             }
         }
         stage('Build') {
