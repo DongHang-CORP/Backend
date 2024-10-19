@@ -9,12 +9,13 @@ pipeline {
             steps {
                 // 깃허브 저장소에서 코드 가져오기
                 checkout scm
+                sh 'echo "Current branch: $(git rev-parse --abbrev-ref HEAD)"'
             }
         }
         stage('Build') {
             when {
                 anyOf {
-                    branch 'main'    // main 브랜치일 때 빌드
+//                     branch 'main'    // main 브랜치일 때 빌드
                     branch 'develop' // develop 브랜치일 때 빌드
                 }
             }
@@ -26,7 +27,7 @@ pipeline {
         stage('Deploy') {
             when {
                 anyOf {
-                    branch 'main'    // main 브랜치일 때 배포
+//                     branch 'main'    // main 브랜치일 때 배포
                     branch 'develop' // develop 브랜치일 때 배포
                 }
             }
