@@ -1,5 +1,5 @@
 # 베이스 이미지 선택
-FROM bellsoft/liberica-openjdk-alpine:21
+FROM bellsoft/liberica-openjdk-alpine:17
 
 # 애플리케이션 실행 디렉토리 설정
 ARG JAR_FILE=build/libs/*.jar
