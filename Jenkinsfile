@@ -19,8 +19,8 @@ pipeline {
                 }
             }
             steps {
-                // 실제 빌드 작업이 필요한 경우 해당 명령어로 대체 가능
                 sh 'echo "Building the project"'
+                sh './gradlew clean build' // Gradle Wrapper를 사용해 프로젝트 빌드
             }
         }
         stage('Deploy') {
