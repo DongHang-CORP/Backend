@@ -9,29 +9,16 @@ pipeline {
             steps {
                 // 깃허브 저장소에서 코드 가져오기
                 checkout scm
-                // sh 'echo "Current branch: $(git rev-parse --abbrev-ref HEAD)"'
-                sh 'echo "Current branch: ${env.GIT_BRANCH}"'
+                sh 'echo "Current branch: $(git rev-parse --abbrev-ref HEAD)"'
             }
         }
         stage('Build') {
-            when {
-                anyOf {
-//                     branch 'main'    // main 브랜치일 때 빌드
-                    branch 'develop' // develop 브랜치일 때 빌드
-                }
-            }
             steps {
                 sh 'echo "Building the project"'
                 sh './gradlew clean build' // Gradle Wrapper를 사용해 프로젝트 빌드
             }
         }
         stage('Deploy') {
-            when {
-                anyOf {
-//                     branch 'main'    // main 브랜치일 때 배포
-                    branch 'develop' // develop 브랜치일 때 배포
-                }
-            }
             steps {
                 sh 'echo "Deploying the project to Kubernetes"'
 
