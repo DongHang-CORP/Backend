@@ -1,6 +1,5 @@
 package org.example.food.service;
 
-import java.awt.print.Pageable;
 import lombok.RequiredArgsConstructor;
 import org.example.food.domain.restaurant.Restaurant;
 import org.example.food.domain.user.User;
@@ -11,8 +10,11 @@ import org.example.food.exception.VideoException;
 import org.example.food.exception.VideoExceptionType;
 import org.example.food.repository.VideoQueryRepository;
 import org.example.food.repository.VideoRepository;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,10 +60,20 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public List<VideoResDto> getAllVideos(Pageable pageable) {
-        return videoRepository.findAll().stream()
+    public Slice<VideoResDto> getAllVideos(Pageable pageable) {
+        List<Video> videos = videoQueryRepository.findAllVideosWithPagination(pageable);
+
+        List<VideoResDto> content = videos.stream()
                 .map(this::toVideoDto)
                 .collect(Collectors.toList());
+
+        boolean hasNext = content.size() > pageable.getPageSize();
+
+        if (hasNext) {
+            content.remove(pageable.getPageSize());  // 페이지 사이즈 초과시 마지막 요소 제거
+        }
+
+        return new SliceImpl<>(content, pageable, hasNext);
     }
 
     @Override
@@ -92,10 +104,19 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public List<VideoResDto> getNearbyVideos(double userLat, double userLon, double radius, Pageable pageable) {
-        List<Video> video = videoQueryRepository.findVideosByLocation(userLat, userLon, radius);
-        return video.stream()
+    public Slice<VideoResDto> getNearbyVideos(double userLat, double userLon, double radius, Pageable pageable) {
+        List<Video> videos = videoQueryRepository.findVideosByLocationWithPagination(userLat, userLon, radius, pageable);
+
+        List<VideoResDto> content = videos.stream()
                 .map(this::toVideoDto)
                 .collect(Collectors.toList());
+
+        boolean hasNext = content.size() > pageable.getPageSize();
+
+        if (hasNext) {
+            content.remove(pageable.getPageSize());  // 페이지 사이즈 초과시 마지막 요소 제거
+        }
+
+        return new SliceImpl<>(content, pageable, hasNext);
     }
 }
