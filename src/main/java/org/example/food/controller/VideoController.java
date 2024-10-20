@@ -1,5 +1,6 @@
 package org.example.food.controller;
 
+import java.awt.print.Pageable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.food.domain.restaurant.Restaurant;
@@ -32,8 +33,8 @@ public class VideoController {
     private final RestaurantRepository restaurantRepository;
     private final LikeService likeService;
     @GetMapping
-    public ResponseEntity<List<VideoResDto>> getAllVideos() {
-        List<VideoResDto> videoResDtos = videoService.getAllVideos();
+    public ResponseEntity<List<VideoResDto>> getAllVideos(Pageable pageable) {
+        List<VideoResDto> videoResDtos = videoService.getAllVideos(pageable);
         return new ResponseEntity<>(videoResDtos, HttpStatus.OK);
     }
 
@@ -89,8 +90,8 @@ public class VideoController {
     public ResponseEntity<List<VideoResDto>> getNearbyVideos(
             @RequestParam double userLat,
             @RequestParam double userLon,
-            @RequestParam(defaultValue = "5") double radius) {
-        List<VideoResDto> videos = videoService.getNearbyVideos(userLat, userLon, radius);
+            @RequestParam(defaultValue = "5") double radius, Pageable pageable) {
+        List<VideoResDto> videos = videoService.getNearbyVideos(userLat, userLon, radius, pageable);
         return ResponseEntity.ok(videos);
     }
 

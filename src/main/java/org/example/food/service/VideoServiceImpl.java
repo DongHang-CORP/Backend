@@ -1,5 +1,6 @@
 package org.example.food.service;
 
+import java.awt.print.Pageable;
 import lombok.RequiredArgsConstructor;
 import org.example.food.domain.restaurant.Restaurant;
 import org.example.food.domain.user.User;
@@ -57,7 +58,7 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public List<VideoResDto> getAllVideos() {
+    public List<VideoResDto> getAllVideos(Pageable pageable) {
         return videoRepository.findAll().stream()
                 .map(this::toVideoDto)
                 .collect(Collectors.toList());
@@ -91,7 +92,7 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public List<VideoResDto> getNearbyVideos(double userLat, double userLon, double radius) {
+    public List<VideoResDto> getNearbyVideos(double userLat, double userLon, double radius, Pageable pageable) {
         List<Video> video = videoQueryRepository.findVideosByLocation(userLat, userLon, radius);
         return video.stream()
                 .map(this::toVideoDto)
