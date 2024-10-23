@@ -16,12 +16,6 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/login")
-    public ResponseEntity<UserResDto> loginOrSignUp(@RequestBody LoginDto loginDto) {
-        UserResDto userResDto = userService.signUpOrLogin(loginDto);
-        return new ResponseEntity<>(userResDto, HttpStatus.OK);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<UserResDto> getUserById(@PathVariable Long id) {
         UserResDto userResDto = userService.getUserById(id);
