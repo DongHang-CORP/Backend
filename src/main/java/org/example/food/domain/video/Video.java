@@ -34,7 +34,8 @@ public class Video {
     @Version
     private Long version;
 
-    public void addLikeCount(int likeCount){
+    public int addLikeCount(int likeCount){
         this.likeCount += likeCount;
+        return this.likeCount;
     }
 }

@@ -4,23 +4,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.food.domain.restaurant.Restaurant;
 import org.example.food.domain.user.User;
-import org.example.food.domain.video.Video;
+import org.example.food.common.dto.PagingResDto;
 import org.example.food.domain.video.dto.VideoReqDto;
 import org.example.food.domain.video.dto.VideoResDto;
 import org.example.food.repository.RestaurantRepository;
 import org.example.food.repository.UserRepository;
 import org.example.food.service.LikeService;
 import org.example.food.service.VideoService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.security.Principal;
-import java.util.List;
-
+import org.springframework.data.domain.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -32,15 +28,18 @@ public class VideoController {
     private final RestaurantRepository restaurantRepository;
     private final LikeService likeService;
     @GetMapping
-    public ResponseEntity<List<VideoResDto>> getAllVideos() {
-        List<VideoResDto> videoResDtos = videoService.getAllVideos();
-        return new ResponseEntity<>(videoResDtos, HttpStatus.OK);
-    }
+    public ResponseEntity<?> getAllVideos(Pageable pageable) {
+        User user = new User(1L,
+                "johndoe",                    // username
+                "박민수",                  // nickname
+                "profile.jpg",                // profileImage
+                "john.doe@example.com",       // email
+                "USER"                        // role
+        );
+        Slice<VideoResDto> videoResDtos = videoService.getAllVideos(pageable, user); // Slice 반환
+        boolean hasNextPage = videoResDtos.hasNext(); // 다음 페이지 여부 확인
 
-    @GetMapping("/{id}")
-    public ResponseEntity<VideoResDto> getVideoById(@PathVariable Long id) {
-        VideoResDto videoResDto = videoService.getVideoById(id);
-        return new ResponseEntity<>(videoResDto, HttpStatus.OK);
+        return ResponseEntity.ok(new PagingResDto<>(true, "조회 성공", videoResDtos.getContent(), hasNextPage));
     }
 
     @PostMapping
@@ -86,16 +85,12 @@ public class VideoController {
     }
 
     @GetMapping("/nearby")
-    public ResponseEntity<List<VideoResDto>> getNearbyVideos(
+    public ResponseEntity<?> getNearbyVideos(
             @RequestParam double userLat,
             @RequestParam double userLon,
-            @RequestParam(defaultValue = "5") double radius) {
-        List<VideoResDto> videos = videoService.getNearbyVideos(userLat, userLon, radius);
-        return ResponseEntity.ok(videos);
-    }
+            @RequestParam(defaultValue = "5") double radius,
+            Pageable pageable) {
 
-    @PostMapping("/{videoId}/like")
-    public ResponseEntity<Void> likeNotice(@PathVariable Long videoId){
         User user = new User(1L,
                 "johndoe",                    // username
                 "박민수",                  // nickname
@@ -103,8 +98,24 @@ public class VideoController {
                 "john.doe@example.com",       // email
                 "USER"                        // role
         );
-        likeService.like(user, videoId);
-        return ResponseEntity.ok().build();
+
+        Slice<VideoResDto> videos = videoService.getNearbyVideos(userLat, userLon, radius, pageable, user);
+        boolean hasNextPage = videos.hasNext(); // 다음 페이지 여부 확인
+
+        return ResponseEntity.ok(new PagingResDto<>(true, "조회 성공", videos.getContent(), hasNextPage));
+    }
+
+    @PostMapping("/{videoId}/like")
+    public ResponseEntity<Integer> likeNotice(@PathVariable Long videoId){
+        User user = new User(1L,
+                "johndoe",                    // username
+                "박민수",                  // nickname
+                "profile.jpg",                // profileImage
+                "john.doe@example.com",       // email
+                "USER"                        // role
+        );
+        int like = likeService.like(user, videoId);
+        return new ResponseEntity<>(like, HttpStatus.OK);
     }
 
 }

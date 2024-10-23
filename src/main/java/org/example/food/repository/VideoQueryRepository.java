@@ -8,6 +8,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.example.food.domain.video.QVideo;
 import org.example.food.domain.video.Video;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,11 +22,24 @@ public class VideoQueryRepository {
     private static final double EARTH_RADIUS_KM = 6371.0; // 지구 반지름 (킬로미터 단위)
 
     // 하버사인 공식으로 반경 내의 비디오 검색
-    public List<Video> findVideosByLocation(double userLat, double userLon, double radius) {
+    public List<Video> findVideosByLocationWithPagination(double userLat, double userLon, double radius, Pageable pageable) {
         QVideo video = QVideo.video;
+
         return queryFactory
                 .selectFrom(video)
                 .where(distanceWithinRadius(userLat, userLon, video.restaurant.lat, video.restaurant.lng, radius))
+                .offset(pageable.getOffset())  // offset 설정
+                .limit(pageable.getPageSize() + 1)  // 페이지 사이즈 + 1 설정 (다음 페이지 확인용)
+                .fetch();
+    }
+
+    public List<Video> findAllVideosWithPagination(Pageable pageable) {
+        QVideo video = QVideo.video;
+
+        return queryFactory
+                .selectFrom(video)
+                .offset(pageable.getOffset())   // offset 설정
+                .limit(pageable.getPageSize() + 1)  // 페이지 사이즈 + 1 설정 (다음 페이지 존재 여부 확인용)
                 .fetch();
     }
 

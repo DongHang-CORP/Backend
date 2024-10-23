@@ -4,15 +4,14 @@ import org.example.food.domain.user.User;
 import org.example.food.domain.video.Video;
 import org.example.food.domain.video.dto.VideoReqDto;
 import org.example.food.domain.video.dto.VideoResDto;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.*;
 
 import java.util.List;
 
 public interface VideoService {
-    List<VideoResDto> getAllVideos();
-    VideoResDto getVideoById(Long id);
+    Slice<VideoResDto> getAllVideos(Pageable pageable, User user);
     Long createVideo(VideoReqDto videoReqDto, User user);
     void deleteVideo(Long id);
     Video findVideoById(Long id);
-    List<VideoResDto> getNearbyVideos(double userLat, double userLon, double radius);
+    Slice<VideoResDto> getNearbyVideos(double userLat, double userLon, double radius, Pageable pageable, User user);
 }
