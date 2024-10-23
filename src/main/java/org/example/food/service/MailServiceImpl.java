@@ -3,6 +3,7 @@ package org.example.food.service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -13,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MailServiceImpl implements MailService {
 
     private final JavaMailSender javaMailSender;
@@ -28,9 +30,10 @@ public class MailServiceImpl implements MailService {
     public HashMap<String, Object> sendMailWithCode(String email) {
         HashMap<String, Object> response = new HashMap<>();
         try {
-            int number = createNumber();
-            MimeMessage message = createMail(email, number);
-            sendMailAsync(message);
+            int number = createNumber();  // 랜덤 인증번호 생성
+            System.out.println(number);
+            MimeMessage message = createMail(email, number);  // 이메일 생성
+            sendMailAsync(message);  // 비동기 메일 전송
 
             // Redis에 이메일과 인증번호 저장, 5분 유효
             redisTemplate.opsForValue().set(email, number, 5, TimeUnit.MINUTES);
@@ -38,11 +41,13 @@ public class MailServiceImpl implements MailService {
             response.put("success", true);
             response.put("number", number);
         } catch (Exception e) {
+            log.error("메일 전송 중 오류 발생: {}", e.getMessage());
             response.put("success", false);
             response.put("error", e.getMessage());
         }
         return response;
     }
+
 
     @Override
     public MimeMessage createMail(String email, int number) throws MessagingException {
