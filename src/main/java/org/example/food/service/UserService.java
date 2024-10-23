@@ -10,5 +10,5 @@ public interface UserService {
     UserResDto updateUser(Long id, UserReqDto userReqDto);
     void deleteUser(Long id);
     User findUserById(Long id);
-    UserResDto findUserByEmail(String email);
+    Long findUserByEmail(String email);
 }

@@ -26,9 +26,6 @@ public class AuthController {
     private final JWTUtil jwtUtil;
     private final UserService userService;
 
-    private int number;
-
-    // 이메일 인증 코드 요청
     @PostMapping("/mailSend")
     public HashMap<String, Object> mailSend(@RequestBody HashMap<String, String> payload) {
         HashMap<String, Object> map = new HashMap<>();
@@ -52,39 +49,29 @@ public class AuthController {
         return map;
     }
 
-    // 이메일 인증 확인
     @GetMapping("/loginCheck")
     public ResponseEntity<?> loginCheck(@RequestParam String email, @RequestParam String userNumber) {
-        boolean isMatch = userNumber.equals(String.valueOf(number));
-
-        if (isMatch) {
-            UserResDto userResDto = userService.findUserByEmail(email);
-            String token;
-
-            if (userResDto != null) {
-                token = jwtUtil.createJwt(email, "role", 60 * 60 * 10L);
-                HttpHeaders headers = new HttpHeaders();
-                headers.add("Authorization", "Bearer " + token);
-                return new ResponseEntity<>(headers, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("유저 정보가 없습니다", HttpStatus.NOT_FOUND);
-            }
+        if (!mailServiceImpl.verifyMailCode(email, userNumber)) {
+            return new ResponseEntity<>("인증번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
         }
 
-        return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+        Long userId = userService.findUserByEmail(email);
+        String token;
+
+        if (userId != 0L) {
+            token = jwtUtil.createJwt(userId, email, "ADMIN", 60 * 60 * 10L);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + token);
+            return new ResponseEntity<>(headers, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("유저 정보가 없습니다", HttpStatus.NOT_FOUND);
+        }
     }
 
-    // 회원가입 처리
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserReqDto userReqDto, @RequestParam String userNumber) {
-        // 이메일 인증 확인
-        boolean isMatch = userNumber.equals(String.valueOf(number));
-        if (!isMatch) {
-            return new ResponseEntity<>("Invalid or expired verification code.", HttpStatus.UNAUTHORIZED);
-        }
-
+    public ResponseEntity<?> register(@RequestBody UserReqDto userReqDto) {
         Long userId = userService.createUser(userReqDto);
-        String token = jwtUtil.createJwt(userReqDto.getEmail(), "role", 60 * 60 * 10L);
+        String token = jwtUtil.createJwt(userId, userReqDto.getEmail(), "ADMIN", 60 * 60 * 10L);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + token);

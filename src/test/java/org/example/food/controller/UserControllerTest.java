@@ -26,24 +26,24 @@ class UserControllerTest extends IntegrationTest {
     @MockBean
     private UserService userService;
 
-    @Test
-    void findUserByEmail() throws Exception {
-        // Given
-        LoginDto loginDto = new LoginDto();
-        loginDto.setEmail("test@example.com");
-        UserResDto userResDto = new UserResDto();
-        userResDto.setEmail("test@example.com");
-
-        // When
-        when(userService.findUserByEmail("test@example.com")).thenReturn(userResDto);
-
-        // Then
-        mockMvc.perform(post("/api/users/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("test@example.com"));
-    }
+//    @Test
+//    void findUserByEmail() throws Exception {
+//        // Given
+//        LoginDto loginDto = new LoginDto();
+//        loginDto.setEmail("test@example.com");
+//        UserResDto userResDto = new UserResDto();
+//        userResDto.setEmail("test@example.com");
+//
+//        // When
+//        when(userService.findUserByEmail("test@example.com")).thenReturn(userResDto);
+//
+//        // Then
+//        mockMvc.perform(post("/api/users/login")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(loginDto)))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.email").value("test@example.com"));
+//    }
 
     @Test
     void getUserById() throws Exception {

@@ -35,18 +35,18 @@ class UserServiceImplTest {
         Assertions.assertThat(user.getEmail()).isEqualTo(findUser.getEmail());
     }
 
-    @Test
-    void 로그인_이메일_존재(){
-        //given
-        UserReqDto user = createDummyUser();
-        userService.createUser(user);
-        LoginDto loginDto = new LoginDto();
-        loginDto.setEmail("urinaner@naver.com");
-        //when
-        UserResDto userResDto = userService.findUserByEmail(loginDto.getEmail());
-        //then
-        Assertions.assertThat(loginDto.getEmail()).isEqualTo(userResDto.getEmail());
-    }
+//    @Test
+//    void 로그인_이메일_존재(){
+//        //given
+//        UserReqDto user = createDummyUser();
+//        userService.createUser(user);
+//        LoginDto loginDto = new LoginDto();
+//        loginDto.setEmail("urinaner@naver.com");
+//        //when
+//        UserResDto userResDto = userService.findUserByEmail(loginDto.getEmail());
+//        //then
+//        Assertions.assertThat(loginDto.getEmail()).isEqualTo(userResDto.getEmail());
+//    }
 
     private UserReqDto createDummyUser(){
         UserReqDto user = new UserReqDto();

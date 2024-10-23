@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.example.food.domain.user.User;
 import org.example.food.domain.user.dto.UserReqDto;
 import org.example.food.domain.user.dto.UserResDto;
+import org.example.food.exception.UserException;
+import org.example.food.exception.UserExceptionType;
 import org.example.food.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,7 @@ public class UserServiceImpl implements UserService {
         UserResDto dto = new UserResDto();
         dto.setUserId(user.getId());
         dto.setUsername(user.getUsername());
+        dto.setNickname(user.getNickname());
         dto.setEmail(user.getEmail());
         return dto;
     }
@@ -30,6 +33,8 @@ public class UserServiceImpl implements UserService {
         }
         User user = new User();
         user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
+        user.setNickname(dto.getNickname());
         user.setEmail(dto.getEmail());
         return user;
     }
@@ -74,8 +79,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResDto findUserByEmail(String email) {
+    public Long findUserByEmail(String email) {
         User user = userRepository.findByEmail(email);
-        return toUserDto(user);
+        if (user == null) {
+            return 0L;
+        }
+        return user.getId();
     }
 }
