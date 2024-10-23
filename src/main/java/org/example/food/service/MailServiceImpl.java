@@ -44,8 +44,8 @@ public class MailServiceImpl implements MailService {
         return response;
     }
 
-    // 이메일 인증 메일 작성
-    private MimeMessage createMail(String email, int number) throws MessagingException {
+    @Override
+    public MimeMessage createMail(String email, int number) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         message.setFrom(SENDER_EMAIL);
         message.setRecipients(MimeMessage.RecipientType.TO, email);

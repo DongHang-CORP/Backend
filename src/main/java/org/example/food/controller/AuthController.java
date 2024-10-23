@@ -26,8 +26,6 @@ public class AuthController {
     private final JWTUtil jwtUtil;
     private final UserService userService;
 
-    private int number;
-
     @PostMapping("/mailSend")
     public HashMap<String, Object> mailSend(@RequestBody HashMap<String, String> payload) {
         HashMap<String, Object> map = new HashMap<>();
@@ -40,11 +38,9 @@ public class AuthController {
         }
 
         try {
-            number = mailServiceImpl.sendMail(mail);
-            String num = String.valueOf(number);
-
-            map.put("success", Boolean.TRUE);
-            map.put("number", num);
+            HashMap<String, Object> response = mailServiceImpl.sendMailWithCode(mail);
+            map.put("success", response.get("success"));
+            map.put("number", response.get("number"));
         } catch (Exception e) {
             map.put("success", Boolean.FALSE);
             map.put("error", e.getMessage());
@@ -53,30 +49,25 @@ public class AuthController {
         return map;
     }
 
-    // 이메일 인증 확인
     @GetMapping("/loginCheck")
     public ResponseEntity<?> loginCheck(@RequestParam String email, @RequestParam String userNumber) {
-
-        boolean isMatch = userNumber.equals(String.valueOf(number));
-
-        if (isMatch) {
-            UserResDto userResDto = userService.findUserByEmail(email);
-            String token;
-
-            if (userResDto != null) {
-                token = jwtUtil.createJwt(email, "role", 60 * 60 * 10L);
-                HttpHeaders headers = new HttpHeaders();
-                headers.add("Authorization", "Bearer " + token);
-                return new ResponseEntity<>(headers, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("유저 정보가 없습니다", HttpStatus.NOT_FOUND);
-            }
+        if (!mailServiceImpl.verifyMailCode(email, userNumber)) {
+            return new ResponseEntity<>("인증번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
         }
 
-        return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+        UserResDto userResDto = userService.findUserByEmail(email);
+        String token;
+
+        if (userResDto != null) {
+            token = jwtUtil.createJwt(email, "role", 60 * 60 * 10L);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + token);
+            return new ResponseEntity<>(headers, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("유저 정보가 없습니다", HttpStatus.NOT_FOUND);
+        }
     }
 
-    // 회원가입 처리
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserReqDto userReqDto) {
         Long userId = userService.createUser(userReqDto);
