@@ -1,8 +1,10 @@
 package org.example.food.service;
 
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import java.util.HashMap;
 
 public interface MailService {
-    MimeMessage CreateMail(String mail);
-    int sendMail(String mail);
+    MimeMessage createMail(String mail, int number) throws MessagingException;
+    HashMap<String, Object> sendMailWithCode(String mail) ;
 }

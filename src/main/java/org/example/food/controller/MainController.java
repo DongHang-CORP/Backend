@@ -1,6 +1,7 @@
 package org.example.food.controller;
 
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.example.food.domain.user.dto.CustomUserDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -8,9 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class MainController {
 
     @GetMapping
-    public String main(){
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        return "Main" + name;
+    public String mainView(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            return "Main: 인증되지 않은 사용자입니다.";
+        }
+        String email = userDetails.getEmail();
+        return "Main: " + email + userDetails.getUserId() + userDetails.getNickname();
     }
-
 }
