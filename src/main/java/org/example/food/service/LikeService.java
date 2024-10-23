@@ -22,7 +22,7 @@ public class LikeService {
     private final LikeRepository likeRepository;
 
     @Transactional
-    public void like(User user, Long videoId) {
+    public int like(User user, Long videoId) {
         Optional<Video> video = videoRepository.findByIdWithOptimisticLock(videoId);
         if (video.isEmpty()) throw new VideoException(VideoExceptionType.NOT_FOUND_VIDEO);
         Video boardPost = video.get();
@@ -36,10 +36,10 @@ public class LikeService {
                     .video(boardPost)
                     .build();
             likeRepository.save(like);
-            boardPost.addLikeCount(1);
+            return boardPost.addLikeCount(1);
         } else {
             likeRepository.deleteByUserAndVideo(user, boardPost);
-            boardPost.addLikeCount(-1);
+            return boardPost.addLikeCount(-1);
         }
     }
 }

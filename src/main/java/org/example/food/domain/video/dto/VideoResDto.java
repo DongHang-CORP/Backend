@@ -16,4 +16,5 @@ public class VideoResDto {
     private String content;
     private Category category;
     private int likeCount;
+    private boolean isLike;
 }

@@ -8,6 +8,7 @@ import org.example.food.domain.video.dto.VideoReqDto;
 import org.example.food.domain.video.dto.VideoResDto;
 import org.example.food.exception.VideoException;
 import org.example.food.exception.VideoExceptionType;
+import org.example.food.repository.LikeRepository;
 import org.example.food.repository.VideoQueryRepository;
 import org.example.food.repository.VideoRepository;
 import org.springframework.data.domain.Slice;
@@ -27,12 +28,15 @@ public class VideoServiceImpl implements VideoService {
     private final VideoRepository videoRepository;
     private final RestaurantService restaurantService; // Restaurant 관련 로직 분리
     private final VideoQueryRepository videoQueryRepository;
+    private final LikeRepository likeRepository;
 
     // Video -> VideoResDto 변환
-    private VideoResDto toVideoDto(Video video) {
+    private VideoResDto toVideoDto(Video video, User user) {
         if (video == null) {
             return null;
         }
+        boolean isLike = likeRepository.findByUserAndVideo(user, video).isPresent();  // 좋아요 여부 확인
+
         return VideoResDto.builder()
                 .videoId(video.getId())
                 .url(video.getUrl())
@@ -42,6 +46,7 @@ public class VideoServiceImpl implements VideoService {
                 .restaurantId(video.getRestaurant().getId())
                 .userNickname(video.getUser().getNickname())
                 .likeCount(video.getLikeCount())
+                .isLike(isLike)
                 .build();
     }
 
@@ -60,11 +65,11 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public Slice<VideoResDto> getAllVideos(Pageable pageable) {
+    public Slice<VideoResDto> getAllVideos(Pageable pageable, User user) {
         List<Video> videos = videoQueryRepository.findAllVideosWithPagination(pageable);
 
         List<VideoResDto> content = videos.stream()
-                .map(this::toVideoDto)
+                .map(video -> toVideoDto(video, user))  // 현재 사용자를 함께 전달
                 .collect(Collectors.toList());
 
         boolean hasNext = content.size() > pageable.getPageSize();
@@ -74,12 +79,6 @@ public class VideoServiceImpl implements VideoService {
         }
 
         return new SliceImpl<>(content, pageable, hasNext);
-    }
-
-    @Override
-    public VideoResDto getVideoById(Long id) {
-        Video video = findVideoById(id);
-        return toVideoDto(video);
     }
 
     @Override
@@ -104,11 +103,11 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public Slice<VideoResDto> getNearbyVideos(double userLat, double userLon, double radius, Pageable pageable) {
+    public Slice<VideoResDto> getNearbyVideos(double userLat, double userLon, double radius, Pageable pageable, User user) {
         List<Video> videos = videoQueryRepository.findVideosByLocationWithPagination(userLat, userLon, radius, pageable);
 
         List<VideoResDto> content = videos.stream()
-                .map(this::toVideoDto)
+                .map(video -> toVideoDto(video, user))
                 .collect(Collectors.toList());
 
         boolean hasNext = content.size() > pageable.getPageSize();

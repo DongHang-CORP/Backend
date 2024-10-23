@@ -29,15 +29,17 @@ public class VideoController {
     private final LikeService likeService;
     @GetMapping
     public ResponseEntity<?> getAllVideos(Pageable pageable) {
-        Slice<VideoResDto> videoResDtos = videoService.getAllVideos(pageable); // Slice 반환
+        User user = new User(1L,
+                "johndoe",                    // username
+                "박민수",                  // nickname
+                "profile.jpg",                // profileImage
+                "john.doe@example.com",       // email
+                "USER"                        // role
+        );
+        Slice<VideoResDto> videoResDtos = videoService.getAllVideos(pageable, user); // Slice 반환
         boolean hasNextPage = videoResDtos.hasNext(); // 다음 페이지 여부 확인
 
         return ResponseEntity.ok(new PagingResDto<>(true, "조회 성공", videoResDtos.getContent(), hasNextPage));
-    }
-    @GetMapping("/{id}")
-    public ResponseEntity<VideoResDto> getVideoById(@PathVariable Long id) {
-        VideoResDto videoResDto = videoService.getVideoById(id);
-        return new ResponseEntity<>(videoResDto, HttpStatus.OK);
     }
 
     @PostMapping
@@ -89,14 +91,6 @@ public class VideoController {
             @RequestParam(defaultValue = "5") double radius,
             Pageable pageable) {
 
-        Slice<VideoResDto> videos = videoService.getNearbyVideos(userLat, userLon, radius, pageable);
-        boolean hasNextPage = videos.hasNext(); // 다음 페이지 여부 확인
-
-        return ResponseEntity.ok(new PagingResDto<>(true, "조회 성공", videos.getContent(), hasNextPage));
-    }
-
-    @PostMapping("/{videoId}/like")
-    public ResponseEntity<Void> likeNotice(@PathVariable Long videoId){
         User user = new User(1L,
                 "johndoe",                    // username
                 "박민수",                  // nickname
@@ -104,8 +98,24 @@ public class VideoController {
                 "john.doe@example.com",       // email
                 "USER"                        // role
         );
-        likeService.like(user, videoId);
-        return ResponseEntity.ok().build();
+
+        Slice<VideoResDto> videos = videoService.getNearbyVideos(userLat, userLon, radius, pageable, user);
+        boolean hasNextPage = videos.hasNext(); // 다음 페이지 여부 확인
+
+        return ResponseEntity.ok(new PagingResDto<>(true, "조회 성공", videos.getContent(), hasNextPage));
+    }
+
+    @PostMapping("/{videoId}/like")
+    public ResponseEntity<Integer> likeNotice(@PathVariable Long videoId){
+        User user = new User(1L,
+                "johndoe",                    // username
+                "박민수",                  // nickname
+                "profile.jpg",                // profileImage
+                "john.doe@example.com",       // email
+                "USER"                        // role
+        );
+        int like = likeService.like(user, videoId);
+        return new ResponseEntity<>(like, HttpStatus.OK);
     }
 
 }

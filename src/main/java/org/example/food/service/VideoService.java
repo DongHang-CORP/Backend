@@ -9,10 +9,9 @@ import org.springframework.data.domain.*;
 import java.util.List;
 
 public interface VideoService {
-    Slice<VideoResDto> getAllVideos(Pageable pageable);
-    VideoResDto getVideoById(Long id);
+    Slice<VideoResDto> getAllVideos(Pageable pageable, User user);
     Long createVideo(VideoReqDto videoReqDto, User user);
     void deleteVideo(Long id);
     Video findVideoById(Long id);
-    Slice<VideoResDto> getNearbyVideos(double userLat, double userLon, double radius, Pageable pageable);
+    Slice<VideoResDto> getNearbyVideos(double userLat, double userLon, double radius, Pageable pageable, User user);
 }
