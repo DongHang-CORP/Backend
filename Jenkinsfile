@@ -2,7 +2,7 @@ pipeline {
     agent any // 에이전트 선택 (특정 노드 라벨을 사용할 수도 있음)
     environment {
         NCP_CONTAINER_REGISTRY = "contest23-server.kr.ncr.ntruss.com" // 도커 이미지 저장 및 획득용 네이버 컨테이너 레지스트리 링크
-        NCP_ACCESS_KEY = credentials("naver_cloud_api_access_credential")
+        // NCP_ACCESS_KEY = credentials("naver_cloud_api_access_credential")
         KUBECONFIG = credentials('contest23_k8s') // Jenkins에 저장된 Kubeconfig credentials ID 사용
     }
     stages {
@@ -29,13 +29,12 @@ pipeline {
         }
         // 네이버 클라우드 로그인
         stage('Login to NCP Container Registry') {
-                    steps {
-                        script {
-                            // NCP 컨테이너 레지스트리에 로그인
-                            sh "echo ${NCP_SECRET_KEY_PSW} | docker login ${NCP_CONTAINER_REGISTRY} -u ${NCP_ACCESS_KEY} --password-stdin"
-                        }
-                    }
-                }
+             steps {
+                  withCredentials([usernamePassword(credentialsId: 'ncp-registry-credentials', usernameVariable: 'NCP_ACCESS_KEY', passwordVariable: 'NCP_SECRET_KEY')]) {
+                       sh "echo ${NCP_SECRET_KEY} | docker login ${NCP_CONTAINER_REGISTRY} -u ${NCP_ACCESS_KEY} --password-stdin"
+                  }
+             }
+        }
         // 컨테이너 이미지 빌드
         stage('Docker Build and Push') {
             steps {
@@ -45,10 +44,6 @@ pipeline {
                     // 네이버 클라우드 CLI 로그인
                     sh "ncloud login -i ${NCP_ACCESS_KEY} -s ${NCP_ACCESS_KEY_PSW}"
                     echo "Naver Cloud CLI login completed"
-
-                    // 도커 로그인
-                    sh "echo ${NCP_ACCESS_KEY_PSW} | docker login ${NCP_CONTAINER_REGISTRY} -u ${NCP_ACCESS_KEY} --password-stdin"
-                    echo "Docker login completed"
 
                     // Docker 이미지 빌드 (Dockerfile을 기반으로 빌드)
                     def imageName = "${NCP_CONTAINER_REGISTRY}/contest23-server:${env.BUILD_NUMBER}"
