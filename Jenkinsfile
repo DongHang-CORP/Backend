@@ -29,7 +29,7 @@ pipeline {
         // 네이버 클라우드 로그인
         stage('Login to NCP Container Registry') {
              steps {
-                  withCredentials([usernamePassword(credentialsId: 'ncp-registry-credentials', usernameVariable: 'NCP_ACCESS_KEY', passwordVariable: 'NCP_SECRET_KEY')]) {
+                  withCredentials([usernamePassword(credentialsId: 'naver_cloud_api_access_credential', usernameVariable: 'NCP_ACCESS_KEY', passwordVariable: 'NCP_ACCESS_KEY_PSW')]) {
                        sh "echo ${NCP_SECRET_KEY} | docker login ${NCP_CONTAINER_REGISTRY} -u ${NCP_ACCESS_KEY} --password-stdin"
                   }
              }
