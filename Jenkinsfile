@@ -27,19 +27,30 @@ pipeline {
             }
         }
         // Docker 이미지 빌드 (Dockerfile을 기반으로 빌드)
-//         stage('Build Docker Container Image'){
-//             def imageName = "${NCP_CONTAINER_REGISTRY}/contest23-server:${env.BUILD_NUMBER}"
-//             echo "Building Docker image: ${imageName}"
-//             def customImage = docker.build(imageName)
-//             echo "Docker build completed"
-//         }
+        stage('Build Docker Container Image') {
+            steps {
+                script {
+                    echo "Stage: Build Docker Container Image started"
+
+                    // Docker 이미지 빌드 (Dockerfile을 기반으로 빌드)
+                    def imageName = "${NCP_CONTAINER_REGISTRY}/contest23-server:${env.BUILD_NUMBER}"
+                    echo "Building Docker image: ${imageName}"
+                    def customImage = docker.build(imageName)
+                    echo "Docker build completed"
+
+                    // 이미지 변수 저장
+                    env.IMAGE_NAME = imageName
+                    env.CUSTOM_IMAGE = customImage
+                }
+            }
+        }
         // 네이버 클라우드 로그인
         stage('Login to NCP Container Registry') {
-             steps {
-                  withCredentials([usernamePassword(credentialsId: 'naver_cloud_api_access_credential', usernameVariable: 'NCP_ACCESS_KEY', passwordVariable: 'NCP_ACCESS_KEY_PSW')]) {
-                       sh "echo ${NCP_ACCESS_KEY_PSW} | docker login ${NCP_CONTAINER_REGISTRY} -u ${NCP_ACCESS_KEY} --password-stdin"
-                  }
-             }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'naver_cloud_api_access_credential', usernameVariable: 'NCP_ACCESS_KEY', passwordVariable: 'NCP_ACCESS_KEY_PSW')]) {
+                    sh "echo ${NCP_ACCESS_KEY_PSW} | docker login ${NCP_CONTAINER_REGISTRY} -u ${NCP_ACCESS_KEY} --password-stdin"
+                }
+            }
         }
         // 컨테이너 이미지 빌드
         stage('Push Container Image To NCP Container Registry') {
@@ -47,16 +58,12 @@ pipeline {
                 script {
                     echo "Stage: Docker Build and Push started"
 
-                    // 네이버 클라우드 CLI 로그인
-                    sh "ncloud login -i ${NCP_ACCESS_KEY} -s ${NCP_ACCESS_KEY_PSW}"
-                    echo "Naver Cloud CLI login completed"
-
                     // Docker 이미지 푸시
-                    customImage.push()
-                    echo "Pushed Docker image: ${imageName}"
+                    sh "docker push ${env.IMAGE_NAME}"
+                    echo "Pushed Docker image: ${env.IMAGE_NAME}"
 
                     // 'latest' 태그로도 푸시
-                    sh "docker tag ${imageName} ${NCP_CONTAINER_REGISTRY}/contest23-server:latest"
+                    sh "docker tag ${env.IMAGE_NAME} ${NCP_CONTAINER_REGISTRY}/contest23-server:latest"
                     sh "docker push ${NCP_CONTAINER_REGISTRY}/contest23-server:latest"
                     echo "Docker image pushed with latest tag"
 
@@ -77,7 +84,6 @@ pipeline {
                     echo "Stage: Deploy started"
                     echo "Deploying the project to Kubernetes"
 
-                    // kubeconfig 설정 후 배포
                     sh 'export KUBECONFIG=$KUBECONFIG && ./deploy.sh'
                     echo "Stage: Deploy completed"
                 }

@@ -15,3 +15,4 @@
 | 2024.10.24 19:09 | using withcredential in code |
 | 2024.10.24 23:37 | connect docker socket        |
 | 2024.10.25 01:45 | change pipeline sequence     |
+| 2024.10.25 01:45 | fix 'build docker image code'|
