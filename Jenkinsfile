@@ -27,12 +27,12 @@ pipeline {
             }
         }
         // Docker 이미지 빌드 (Dockerfile을 기반으로 빌드)
-        stage('Build Docker Container Image'){
-            def imageName = "${NCP_CONTAINER_REGISTRY}/contest23-server:${env.BUILD_NUMBER}"
-            echo "Building Docker image: ${imageName}"
-            def customImage = docker.build(imageName)
-            echo "Docker build completed"
-        }
+//         stage('Build Docker Container Image'){
+//             def imageName = "${NCP_CONTAINER_REGISTRY}/contest23-server:${env.BUILD_NUMBER}"
+//             echo "Building Docker image: ${imageName}"
+//             def customImage = docker.build(imageName)
+//             echo "Docker build completed"
+//         }
         // 네이버 클라우드 로그인
         stage('Login to NCP Container Registry') {
              steps {
