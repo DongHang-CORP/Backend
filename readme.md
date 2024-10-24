@@ -13,3 +13,4 @@
 | 2024.10.24 19:09 | jenkins credential check     |
 | 2024.10.24 19:09 | ncp container registry login |
 | 2024.10.24 19:09 | using withcredential in code |
+| 2024.10.24 23:37 | connect docker socket        |
