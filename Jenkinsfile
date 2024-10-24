@@ -27,6 +27,15 @@ pipeline {
                 }
             }
         }
+        // 네이버 클라우드 로그인
+        stage('Login to NCP Container Registry') {
+                    steps {
+                        script {
+                            // NCP 컨테이너 레지스트리에 로그인
+                            sh "echo ${NCP_SECRET_KEY_PSW} | docker login ${NCP_CONTAINER_REGISTRY} -u ${NCP_ACCESS_KEY} --password-stdin"
+                        }
+                    }
+                }
         // 컨테이너 이미지 빌드
         stage('Docker Build and Push') {
             steps {
