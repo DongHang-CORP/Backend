@@ -13,6 +13,7 @@ pipeline {
                     echo "Stage: Checkout started"
                     checkout scm
                     echo "Stage: Checkout completed"
+                    echo "NCP_ACCESS_KEY : ${NCP_ACCESS_KEY}"
                 }
             }
         }
@@ -23,7 +24,6 @@ pipeline {
                     echo "Stage: Build started"
                     sh './gradlew clean bootjar'
                     echo "Stage: Build completed"
-                    echo "NCP_ACCESS_KEY : ${NCP_ACCESS_KEY}"
                 }
             }
         }
@@ -34,11 +34,11 @@ pipeline {
                     echo "Stage: Docker Build and Push started"
 
                     // 네이버 클라우드 CLI 로그인
-                    sh "ncloud login -i ${NCP_ACCESS_KEY_USR} -s ${NCP_ACCESS_KEY_PSW}"
+                    sh "ncloud login -i ${NCP_ACCESS_KEY} -s ${NCP_ACCESS_KEY_PSW}"
                     echo "Naver Cloud CLI login completed"
 
                     // 도커 로그인
-                    sh "echo ${NCP_ACCESS_KEY_PSW} | docker login ${NCP_CONTAINER_REGISTRY} -u ${NCP_ACCESS_KEY_USR} --password-stdin"
+                    sh "echo ${NCP_ACCESS_KEY_PSW} | docker login ${NCP_CONTAINER_REGISTRY} -u ${NCP_ACCESS_KEY} --password-stdin"
                     echo "Docker login completed"
 
                     // Docker 이미지 빌드 (Dockerfile을 기반으로 빌드)
