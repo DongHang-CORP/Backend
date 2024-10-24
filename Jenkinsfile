@@ -13,7 +13,6 @@ pipeline {
                     echo "Stage: Checkout started"
                     checkout scm
                     echo "Stage: Checkout completed"
-                    echo "NCP_ACCESS_KEY : ${NCP_ACCESS_KEY}"
                 }
             }
         }
