@@ -1,7 +1,6 @@
 pipeline {
     agent any // 에이전트 선택 (특정 노드 라벨을 사용할 수도 있음)
     environment {
-        IMAGE_NAME="contest23-server"
         NCP_CONTAINER_REGISTRY = "contest23-server.kr.ncr.ntruss.com" // 도커 이미지 저장 및 획득용 네이버 컨테이너 레지스트리 링크
         // NCP_ACCESS_KEY = credentials("naver_cloud_api_access_credential")
         KUBECONFIG = credentials('contest23_k8s') // Jenkins에 저장된 Kubeconfig credentials ID 사용
@@ -27,13 +26,6 @@ pipeline {
                 }
             }
         }
-        stage('Build Container Image') {
-        // Docker 이미지 빌드 (Dockerfile을 기반으로 빌드)
-            def imageName = "${NCP_CONTAINER_REGISTRY}/${IMAGE_NAME}"
-            echo "Building Docker image: ${imageName}"
-            def customImage = docker.build(imageName)
-            echo "Docker build completed"
-        }
         // 네이버 클라우드 로그인
         stage('Login to NCP Container Registry') {
              steps {
@@ -43,18 +35,28 @@ pipeline {
              }
         }
         // 컨테이너 이미지 빌드
-        stage('Push Container Image To NCP Container Registry') {
+        stage('Docker Build and Push') {
             steps {
                 script {
-                    echo "Stage: Push Container Image To NCP Container Registry"
+                    echo "Stage: Docker Build and Push started"
+
+                    // 네이버 클라우드 CLI 로그인
+                    sh "ncloud login -i ${NCP_ACCESS_KEY} -s ${NCP_ACCESS_KEY_PSW}"
+                    echo "Naver Cloud CLI login completed"
+
+                    // Docker 이미지 빌드 (Dockerfile을 기반으로 빌드)
+                    def imageName = "${NCP_CONTAINER_REGISTRY}/contest23-server:${env.BUILD_NUMBER}"
+                    echo "Building Docker image: ${imageName}"
+                    def customImage = docker.build(imageName)
+                    echo "Docker build completed"
 
                     // Docker 이미지 푸시
                     customImage.push()
                     echo "Pushed Docker image: ${imageName}"
 
                     // 'latest' 태그로도 푸시
-                    sh "docker tag ${imageName} ${NCP_CONTAINER_REGISTRY}/${IMAGE_NAME}:latest"
-                    sh "docker push ${NCP_CONTAINER_REGISTRY}/${IMAGE_NAME}:latest"
+                    sh "docker tag ${imageName} ${NCP_CONTAINER_REGISTRY}/contest23-server:latest"
+                    sh "docker push ${NCP_CONTAINER_REGISTRY}/contest23-server:latest"
                     echo "Docker image pushed with latest tag"
 
                     echo "Stage: Docker Build and Push completed"
