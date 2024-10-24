@@ -26,6 +26,13 @@ pipeline {
                 }
             }
         }
+        // Docker 이미지 빌드 (Dockerfile을 기반으로 빌드)
+        stage('Build Docker Container Image'){
+            def imageName = "${NCP_CONTAINER_REGISTRY}/contest23-server:${env.BUILD_NUMBER}"
+            echo "Building Docker image: ${imageName}"
+            def customImage = docker.build(imageName)
+            echo "Docker build completed"
+        }
         // 네이버 클라우드 로그인
         stage('Login to NCP Container Registry') {
              steps {
@@ -35,7 +42,7 @@ pipeline {
              }
         }
         // 컨테이너 이미지 빌드
-        stage('Docker Build and Push') {
+        stage('Push Container Image To NCP Container Registry') {
             steps {
                 script {
                     echo "Stage: Docker Build and Push started"
@@ -43,12 +50,6 @@ pipeline {
                     // 네이버 클라우드 CLI 로그인
                     sh "ncloud login -i ${NCP_ACCESS_KEY} -s ${NCP_ACCESS_KEY_PSW}"
                     echo "Naver Cloud CLI login completed"
-
-                    // Docker 이미지 빌드 (Dockerfile을 기반으로 빌드)
-                    def imageName = "${NCP_CONTAINER_REGISTRY}/contest23-server:${env.BUILD_NUMBER}"
-                    echo "Building Docker image: ${imageName}"
-                    def customImage = docker.build(imageName)
-                    echo "Docker build completed"
 
                     // Docker 이미지 푸시
                     customImage.push()
