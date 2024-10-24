@@ -23,6 +23,7 @@ pipeline {
                     echo "Stage: Build started"
                     sh './gradlew clean bootjar'
                     echo "Stage: Build completed"
+                    echo "NCP_ACCESS_KEY : ${NCP_ACCESS_KEY}"
                 }
             }
         }
