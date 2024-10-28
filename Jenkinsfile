@@ -78,7 +78,7 @@ pipeline {
                     echo "Stage: Deploy started"
                     echo "Deploying the project to Kubernetes"
 
-                    sh './deploy.sh'
+                    sh 'export KUBECONFIG=$KUBECONFIG && deploy.sh'
                     echo "Stage: Deploy completed"
                 }
             }
