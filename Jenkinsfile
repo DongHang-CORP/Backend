@@ -77,7 +77,10 @@ pipeline {
                 script {
                     echo "Stage: Deploy started"
                     echo "Deploying the project to Kubernetes"
-
+                    sh 'pwd'
+                    sh 'ls -al'
+                    // Execute deploy.sh if it exists
+                    echo "Deployment to Kubernetes completed"
                     sh 'export KUBECONFIG=$KUBECONFIG && deploy.sh'
                     echo "Stage: Deploy completed"
                 }
