@@ -5,14 +5,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.example.food.domain.user.dto.CustomUserDetails;
 import org.example.food.service.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -30,10 +27,8 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // request에서 Authorization 헤더를 찾음
         String authorization = request.getHeader("Authorization");
 
-        // Authorization 헤더 검증
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -41,22 +36,29 @@ public class JWTFilter extends OncePerRequestFilter {
 
         String token = authorization.split(" ")[1];
 
-        // 토큰 소멸 시간 검증
-        if (jwtUtil.isExpired(token)) {
-            log.warn("Token expired");
+        try {
+            // 토큰 만료 여부 검증
+            if (jwtUtil.isExpired(token)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 상태 코드 설정
+                response.setContentType("application/json");              // JSON 형식 설정
+                response.getOutputStream().print("{\"error\": \"Token expired\"}"); // 본문에 메시지 전송
+                return;
+            }
+
+            String email = jwtUtil.getEmail(token);
+            UserDetails userDetails = userDetailsService.loadUserByEmail(email);
+            Authentication authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+
             filterChain.doFilter(request, response);
-            return;
+
+        } catch (Exception e) {
+            log.error("JWT processing error: {}", e.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getOutputStream().print("{\"error\": \"Invalid token\"}");
         }
-
-        String email = jwtUtil.getEmail(token);
-
-        // UserDetailsService를 사용하여 사용자 정보 로드
-        UserDetails userDetails = userDetailsService.loadUserByEmail(email);
-
-        // Authentication 객체 생성 및 SecurityContext에 저장
-        Authentication authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authToken);
-
-        filterChain.doFilter(request, response);
     }
+
+
 }

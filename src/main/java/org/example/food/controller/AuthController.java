@@ -1,21 +1,16 @@
 package org.example.food.controller;
 
-import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import org.example.food.common.jwt.JWTUtil;
 import org.example.food.domain.user.dto.UserReqDto;
-import org.example.food.domain.user.dto.UserResDto;
 import org.example.food.service.MailServiceImpl;
 import org.example.food.service.UserService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 
 @RestController
 @RequiredArgsConstructor
@@ -59,19 +54,19 @@ public class AuthController {
         String token;
 
         if (userId != 0L) {
-            token = jwtUtil.createJwt(userId, email, "ADMIN", 60 * 60 * 10L);
+            token = jwtUtil.createJwt(userId, email, "ADMIN", 60 * 60 * 10L * 7 * 100);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + token);
             return new ResponseEntity<>(headers, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("유저 정보가 없습니다", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.SEE_OTHER);
         }
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserReqDto userReqDto) {
         Long userId = userService.createUser(userReqDto);
-        String token = jwtUtil.createJwt(userId, userReqDto.getEmail(), "ADMIN", 60 * 60 * 10L);
+        String token = jwtUtil.createJwt(userId, userReqDto.getEmail(), "ADMIN", 60 * 60 * 10L * 7 * 100);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + token);

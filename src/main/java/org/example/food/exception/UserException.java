@@ -6,7 +6,8 @@ import org.example.food.common.exception.BaseExceptionType;
 
 @RequiredArgsConstructor
 public class UserException extends BaseException {
-    private final RestaurantExceptionType exceptionType;
+    private final UserExceptionType exceptionType;
+
     @Override
     public BaseExceptionType exceptionType() {
         return exceptionType;

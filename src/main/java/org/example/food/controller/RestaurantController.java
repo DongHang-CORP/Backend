@@ -1,29 +1,25 @@
 package org.example.food.controller;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.food.domain.restaurant.dto.RestaurantDetailsDto;
 import org.example.food.domain.restaurant.dto.RestaurantReqDto;
 import org.example.food.domain.restaurant.dto.RestaurantResDto;
+import org.example.food.domain.user.User;
 import org.example.food.domain.user.dto.CustomUserDetails;
 import org.example.food.domain.video.Category;
 import org.example.food.service.RestaurantServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/restaurants")
+@Slf4j
 public class RestaurantController {
 
     private final RestaurantServiceImpl restaurantService;
@@ -31,13 +27,14 @@ public class RestaurantController {
     @GetMapping
     public ResponseEntity<List<RestaurantResDto>> getAllRestaurants() {
         List<RestaurantResDto> restaurantResDtos = restaurantService.getAllRestaurants();
-        return new ResponseEntity<>(restaurantResDtos, HttpStatus.OK);
+        return ResponseEntity.ok(restaurantResDtos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RestaurantDetailsDto> getRestaurantById(@PathVariable Long id) {
-        RestaurantDetailsDto restaurant = restaurantService.getRestaurantById(id);
-        return new ResponseEntity<>(restaurant, HttpStatus.OK);
+    public ResponseEntity<RestaurantDetailsDto> getRestaurantById(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        User user = (userDetails != null) ? userDetails.getUser() : null;
+        RestaurantDetailsDto restaurant = restaurantService.getRestaurantById(id, user);
+        return ResponseEntity.ok(restaurant);
     }
 
     @PostMapping
@@ -45,37 +42,12 @@ public class RestaurantController {
             @RequestBody RestaurantReqDto restaurantReqDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
         Long restaurantId = restaurantService.createRestaurant(restaurantReqDto);
-        return new ResponseEntity<>(restaurantId, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<RestaurantResDto> updateRestaurant(
-            @PathVariable Long id,
-            @RequestBody RestaurantReqDto restaurant,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        RestaurantResDto restaurantResDto = restaurantService.updateRestaurant(id, restaurant);
-        return new ResponseEntity<>(restaurantResDto, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.CREATED).body(restaurantId);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRestaurant(
-            @PathVariable Long id,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
+    public ResponseEntity<Void> deleteRestaurant(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
         restaurantService.deleteRestaurant(id);
         return ResponseEntity.noContent().build();
     }
@@ -87,8 +59,7 @@ public class RestaurantController {
             @RequestParam(defaultValue = "5") double radius,
             @RequestParam(required = false) List<Category> categories) {
 
-        List<RestaurantResDto> restaurants = restaurantService.getNearbyRestaurants(userLat, userLon, radius,
-                categories);
+        List<RestaurantResDto> restaurants = restaurantService.getNearbyRestaurants(userLat, userLon, radius, categories);
         return ResponseEntity.ok(restaurants);
     }
 }

@@ -55,6 +55,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long createUser(UserReqDto userReqDto) {
+        // 이메일로 중복 사용자 확인
+        if (userRepository.findByEmail(userReqDto.getEmail()).isPresent()) {
+            throw new UserException(UserExceptionType.NOT_FOUND_USER);
+        }
+
         User user = toEntity(userReqDto);
         userRepository.save(user);
         return user.getId();
@@ -80,10 +85,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long findUserByEmail(String email) {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            return 0L;
-        }
-        return user.getId();
+        return userRepository.findByEmail(email)
+                .map(User::getId)
+                .orElse(0L);
     }
 }

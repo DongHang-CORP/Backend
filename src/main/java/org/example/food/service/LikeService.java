@@ -3,6 +3,7 @@ package org.example.food.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.food.domain.like.Like;
+import org.example.food.domain.like.LikeReqDto;
 import org.example.food.domain.user.User;
 import org.example.food.domain.video.Video;
 import org.example.food.exception.VideoException;
@@ -22,13 +23,17 @@ public class LikeService {
     private final LikeRepository likeRepository;
 
     @Transactional
-    public int like(User user, Long videoId) {
-        Optional<Video> video = videoRepository.findByIdWithOptimisticLock(videoId);
-        if (video.isEmpty()) throw new VideoException(VideoExceptionType.NOT_FOUND_VIDEO);
-        Video boardPost = video.get();
+    public LikeReqDto like(User user, Long videoId) {
+        LikeReqDto likeReqDto = new LikeReqDto();
 
-        Optional<Like> foundLike = null;
-        foundLike = likeRepository.findByUserAndVideo(user, boardPost);
+        Optional<Video> videoOptional = videoRepository.findByIdWithOptimisticLock(videoId);
+        if (videoOptional.isEmpty()) {
+            throw new VideoException(VideoExceptionType.NOT_FOUND_VIDEO);
+        }
+
+        Video boardPost = videoOptional.get();
+
+        Optional<Like> foundLike = likeRepository.findByUserAndVideo(user, boardPost);
 
         if (foundLike.isEmpty()) {
             Like like = Like.builder()
@@ -36,10 +41,14 @@ public class LikeService {
                     .video(boardPost)
                     .build();
             likeRepository.save(like);
-            return boardPost.addLikeCount(1);
+            likeReqDto.setLikeCount(boardPost.incrementLikeCount());
+            likeReqDto.setLiked(true);
         } else {
             likeRepository.deleteByUserAndVideo(user, boardPost);
-            return boardPost.addLikeCount(-1);
+            likeReqDto.setLikeCount(boardPost.decrementLikeCount());
+            likeReqDto.setLiked(false);
         }
+
+        return likeReqDto;
     }
 }
