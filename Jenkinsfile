@@ -73,12 +73,6 @@ pipeline {
         }
         // Kubernetes 배포
         stage('Deploy') {
-            when {
-                anyOf {
-                    branch 'main'    // main 브랜치일 때 배포
-                    branch 'develop' // develop 브랜치일 때 배포
-                }
-            }
             steps {
                 script {
                     echo "Stage: Deploy started"
