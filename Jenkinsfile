@@ -81,7 +81,7 @@ pipeline {
                     sh 'ls -al'
                     // Execute deploy.sh if it exists
                     echo "Deployment to Kubernetes completed"
-                    sh 'export KUBECONFIG=$KUBECONFIG && deploy.sh'
+                    sh 'export KUBECONFIG=$KUBECONFIG && /var/jenkins_home/workspace/cicd/deploy.sh'
                     echo "Stage: Deploy completed"
                 }
             }
