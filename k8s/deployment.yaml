@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: contest23-food-server-container
-          image: contest23-food-server-image:latest  # 사용할 컨테이너 이미지
+          image: contest23-server.kr.ncr.ntruss.com/contest23-server:latest  # 사용할 네이버 클라우드 컨테이너 레지스트리 이미지
           ports:
             - containerPort: 8080  # 컨테이너 내부 포트
           resources:
