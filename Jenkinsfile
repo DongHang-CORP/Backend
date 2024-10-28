@@ -2,7 +2,6 @@ pipeline {
     agent any // 에이전트 선택 (특정 노드 라벨을 사용할 수도 있음)
     environment {
         NCP_CONTAINER_REGISTRY = "contest23-server.kr.ncr.ntruss.com" // 도커 이미지 저장 및 획득용 네이버 컨테이너 레지스트리 링크
-        // NCP_ACCESS_KEY = credentials("naver_cloud_api_access_credential")
         KUBECONFIG = credentials('contest23_k8s') // Jenkins에 저장된 Kubeconfig credentials ID 사용
     }
     stages {
@@ -81,9 +80,7 @@ pipeline {
                     sh 'ls -al'
                     // Execute deploy.sh if it exists
                     echo "Deployment to Kubernetes completed"
-                    withKubeConfig([credentialsId: 'contest23_k8s', serverUrl: 'https://d812b27c-5a94-4003-a966-440694bd60f2.kr.vnks.ntruss.com']) {
-                          sh '/var/jenkins_home/workspace/cicd/deploy.sh'
-                        }
+                    sh 'export KUBECONFIG=$KUBECONFIG && /var/jenkins_home/workspace/cicd/deploy.sh'
                     echo "Stage: Deploy completed"
                 }
             }
