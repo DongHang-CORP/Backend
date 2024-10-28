@@ -19,4 +19,4 @@
 | 2024.10.25 01:45 | change container regi endpoint |
 | 2024.10.28 17:30 | chmod 777 deploy.sh            |
 | 2024.10.28 17:33 | change endpoint to private one |
-| 2024.10.28 17:55 | change endpoint to public one  |
+| 2024.10.28 17:55 | change endpoint to public one. |
