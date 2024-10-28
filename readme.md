@@ -17,3 +17,4 @@
 | 2024.10.25 01:45 | change pipeline sequence       |
 | 2024.10.25 01:45 | fix 'build docker image code'  |
 | 2024.10.25 01:45 | change container regi endpoint |
+| 2024.10.28 17:30 | chmod 777 deploy.sh            |
