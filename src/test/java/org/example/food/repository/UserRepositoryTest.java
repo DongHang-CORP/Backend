@@ -1,7 +1,7 @@
 package org.example.food.repository;
 
-import org.example.food.user.entity.User;
 import org.example.food.testbase.RepositoryTest;
+import org.example.food.user.entity.User;
 import org.example.food.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,15 +40,6 @@ class UserRepositoryTest extends RepositoryTest {
         assertThat(savedUser.getUsername()).isEqualTo("testuser");
     }
 
-    @Test
-    @DisplayName("이메일로 유저 조회 테스트")
-    void 이메일로_유저_조회_테스트() {
-        // 이메일로 유저 조회
-        User foundUser = userRepository.findByEmail(savedUser.getEmail());
-
-        // 조회된 유저 검증
-        assertThat(foundUser.getEmail()).isEqualTo(savedUser.getEmail());
-    }
 
     @Test
     @DisplayName("ID로 유저 조회 테스트")

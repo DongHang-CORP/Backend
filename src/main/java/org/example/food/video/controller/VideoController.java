@@ -3,7 +3,6 @@ package org.example.food.video.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.food.global.common.dto.PagingResDto;
-import org.example.food.like.service.LikeService;
 import org.example.food.restaurant.entity.Restaurant;
 import org.example.food.user.dto.CustomUserDetails;
 import org.example.food.user.entity.User;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 public class VideoController {
 
     private final VideoServiceImpl videoService;
-    private final LikeService likeService;
 
     @GetMapping
     public ResponseEntity<?> getAllVideos(Pageable pageable, @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -56,10 +54,6 @@ public class VideoController {
     public ResponseEntity<Void> deleteVideo(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
         User user = userDetails.getUser();
         Video video = videoService.findVideoById(id);
-
-        if (video == null) {
-            return ResponseEntity.notFound().build();
-        }
 
         if (!video.getUser().getId().equals(user.getId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
