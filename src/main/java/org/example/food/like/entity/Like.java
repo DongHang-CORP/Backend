@@ -27,7 +27,7 @@ public class Like {
     private Video video;
 
     @Builder
-    public Like(User user, Video video) {
+    private Like(User user, Video video) {
         this.user = user;
         this.video = video;
     }
