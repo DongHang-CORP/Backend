@@ -16,7 +16,6 @@ import org.example.food.restaurant.repository.RestaurantRepository;
 import org.example.food.user.entity.User;
 import org.example.food.video.dto.VideoResDto;
 import org.example.food.video.entity.Video;
-import org.example.food.video.repository.VideoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +32,6 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final RestaurantQueryRepository restaurantQueryRepository;
-    private final VideoRepository videoRepository;
     private final LikeRepository likeRepository;
 
     @Override
@@ -51,22 +49,6 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .collect(Collectors.toList());
 
         return new RestaurantDetailsDto(restaurant, videoDtos);
-    }
-
-    private VideoResDto toVideoDto(Video video, User user) {
-        boolean isLike = user != null && likeRepository.findByUserAndVideo(user, video).isPresent();
-
-        return VideoResDto.builder()
-                .videoId(video.getId())
-                .url(video.getUrl())
-                .content(video.getContent())
-                .category(video.getCategory())
-                .restaurant(video.getRestaurant().getName())
-                .restaurantId(video.getRestaurant().getId())
-                .userNickname(video.getUser().getNickname())
-                .likeCount(video.getLikeCount())
-                .isLike(isLike)
-                .build();
     }
 
     @Override
@@ -100,4 +82,8 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .collect(Collectors.toList());
     }
 
+    private VideoResDto toVideoDto(Video video, User user) {
+        boolean isLike = user != null && likeRepository.findByUserAndVideo(user, video).isPresent();
+        return VideoResDto.fromVideo(video, isLike);
+    }
 }
