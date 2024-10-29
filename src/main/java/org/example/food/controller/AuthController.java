@@ -47,7 +47,7 @@ public class AuthController {
     @GetMapping("/loginCheck")
     public ResponseEntity<?> loginCheck(@RequestParam String email, @RequestParam String userNumber) {
         if (!mailServiceImpl.verifyMailCode(email, userNumber)) {
-            return new ResponseEntity<>("인증번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         Long userId = userService.findUserByEmail(email);

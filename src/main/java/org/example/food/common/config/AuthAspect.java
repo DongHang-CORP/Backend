@@ -14,9 +14,11 @@ import org.springframework.stereotype.Component;
 public class AuthAspect {
 
     @Pointcut("@annotation(org.springframework.web.bind.annotation.PostMapping) || " +
-            "@annotation(org.springframework.web.bind.annotation.DeleteMapping)")
+            "@annotation(org.springframework.web.bind.annotation.DeleteMapping) || " +
+            "@annotation(org.springframework.web.bind.annotation.PutMapping)")
     public void authRequired() {
     }
+
 
     @Before("authRequired() && args(.., userDetails)")
     public void checkAuthentication(@AuthenticationPrincipal CustomUserDetails userDetails) {

@@ -10,11 +10,10 @@ import org.example.food.domain.user.dto.CustomUserDetails;
 import org.example.food.domain.video.Video;
 import org.example.food.domain.video.dto.VideoReqDto;
 import org.example.food.domain.video.dto.VideoResDto;
-import org.example.food.repository.RestaurantRepository;
 import org.example.food.service.LikeService;
-import org.example.food.service.VideoService;
+import org.example.food.service.VideoServiceImpl;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,17 +25,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/videos")
 public class VideoController {
 
-    private final VideoService videoService;
-    private final RestaurantRepository restaurantRepository;
+    private final VideoServiceImpl videoService;
     private final LikeService likeService;
 
     @GetMapping
     public ResponseEntity<?> getAllVideos(Pageable pageable, @AuthenticationPrincipal CustomUserDetails userDetails) {
         User user = userDetails != null ? userDetails.getUser() : null;
-        Slice<VideoResDto> videoResDtos = videoService.getAllVideos(pageable, user);
-        boolean hasNextPage = videoResDtos.hasNext();
+        Page<VideoResDto> videoResDtos = videoService.getAllVideos(pageable, user);
 
-        return ResponseEntity.ok(new PagingResDto<>(true, "조회 성공", videoResDtos.getContent(), hasNextPage));
+        int currentPage = videoResDtos.getNumber();      // 현재 페이지
+        int totalPage = videoResDtos.getTotalPages();    // 총 페이지 수
+        boolean hasNextPage = videoResDtos.hasNext();    // 다음 페이지 여부
+
+        return ResponseEntity.ok(new PagingResDto<>(videoResDtos.getContent(), currentPage, totalPage, hasNextPage));
     }
 
     @PostMapping
@@ -46,20 +47,9 @@ public class VideoController {
 
         User user = userDetails.getUser();
 
-        Restaurant restaurant = restaurantRepository.findByName(videoReqDto.getRestaurant())
-                .orElseGet(() -> {
-                    Restaurant newRestaurant = Restaurant.of(
-                            videoReqDto.getRestaurant(),
-                            videoReqDto.getLat(),
-                            videoReqDto.getLng(),
-                            videoReqDto.getCategory()
-                    );
-                    restaurantRepository.save(newRestaurant);
-                    log.info("Created restaurant: {}", newRestaurant.getName());
-                    return newRestaurant;
-                });
+        Restaurant restaurant = videoService.findOrCreateRestaurant(videoReqDto);
 
-        Long videoId = videoService.createVideo(videoReqDto, user);
+        Long videoId = videoService.createVideo(videoReqDto, user, restaurant);
         return ResponseEntity.ok(videoId);
     }
 
@@ -89,17 +79,17 @@ public class VideoController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         User user = userDetails != null ? userDetails.getUser() : null;
-        Slice<VideoResDto> videos = videoService.getNearbyVideos(userLat, userLon, radius, pageable, user);
-        boolean hasNextPage = videos.hasNext();
+        Page<VideoResDto> videoResDtos = videoService.getNearbyVideos(userLat, userLon, radius, pageable, user);
 
-        return ResponseEntity.ok(new PagingResDto<>(true, "조회 성공", videos.getContent(), hasNextPage));
+        int currentPage = videoResDtos.getNumber();      // 현재 페이지
+        int totalPage = videoResDtos.getTotalPages();    // 총 페이지 수
+        boolean hasNextPage = videoResDtos.hasNext();    // 다음 페이지 여부
+
+        return ResponseEntity.ok(new PagingResDto<>(videoResDtos.getContent(), currentPage, totalPage, hasNextPage));
     }
 
     @PutMapping("/{videoId}/like")
     public ResponseEntity<LikeReqDto> likeVideo(@PathVariable Long videoId, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        if (userDetails == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
 
         User user = userDetails.getUser();
         LikeReqDto like = likeService.like(user, videoId);

@@ -4,15 +4,15 @@ import lombok.Data;
 
 @Data
 public class PagingResDto<T> {
-    private boolean success;
-    private String message;
     private T data;
+    private int page;
+    private int totalPage;
     private boolean nextPage;
 
-    public PagingResDto(boolean success, String message, T data, boolean nextPage) {
-        this.success = success;
-        this.message = message;
+    public PagingResDto(T data, int page, int totalPage, boolean nextPage) {
         this.data = data;
+        this.page = page + 1;
+        this.totalPage = totalPage;
         this.nextPage = nextPage;
     }
 }
