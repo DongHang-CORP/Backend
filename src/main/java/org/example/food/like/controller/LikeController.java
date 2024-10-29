@@ -22,7 +22,7 @@ public class LikeController {
 
     private final LikeService likeService;
 
-    @PutMapping("/video/{videoId}")
+    @PutMapping("/{videoId}/like")
     public ResponseEntity<LikeReqDto> likeVideo(
             @PathVariable Long videoId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
