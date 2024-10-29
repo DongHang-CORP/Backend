@@ -27,24 +27,19 @@ public class RestaurantQueryRepository {
         QRestaurant restaurant = QRestaurant.restaurant;
         return queryFactory
                 .selectFrom(restaurant)
-                .where(distanceWithinRadius(location.getUserLat(), location.getUserLon(), restaurant.lat, restaurant.lng, location.getRadius())
+                .where(distanceWithinRadius(location, restaurant.lat, restaurant.lng)
                         .and(categoryIn(categories))) // 카테고리 필터 추가
                 .fetch();
     }
 
-    // 하버사인 공식으로 거리 계산하여 반경 내인지 확인하는 메서드
-    private BooleanExpression distanceWithinRadius(double userLat, double userLon,
+    private BooleanExpression distanceWithinRadius(Location location,
                                                    NumberPath<Double> restaurantLat,
-                                                   NumberPath<Double> restaurantLon,
-                                                   double radius) {
-        // 하버사인 거리 계산을 위한 식
-        NumberTemplate<Double> distance = calculateDistance(userLat, userLon, restaurantLat, restaurantLon);
+                                                   NumberPath<Double> restaurantLon) {
 
-        // 계산된 거리가 반경 내인지 확인
-        return distance.loe(radius);
+        NumberTemplate<Double> distance = calculateDistance(location, restaurantLat, restaurantLon);
+        return distance.loe(location.getRadius());
     }
 
-    // 카테고리 조건 추가
     private BooleanExpression categoryIn(List<Category> categories) {
         if (categories == null || categories.isEmpty()) {
             return null; // 카테고리가 없으면 모든 카테고리 반환
@@ -52,12 +47,11 @@ public class RestaurantQueryRepository {
         return QRestaurant.restaurant.category.in(categories); // 선택된 카테고리에 해당하는 음식점
     }
 
-    // 하버사인 공식으로 거리 계산
-    private NumberTemplate<Double> calculateDistance(double userLat, double userLon,
+    private NumberTemplate<Double> calculateDistance(Location location,
                                                      NumberPath<Double> restaurantLat,
                                                      NumberPath<Double> restaurantLon) {
         return Expressions.numberTemplate(Double.class,
                 "({0} * acos(cos(radians({1})) * cos(radians({2})) * cos(radians({3}) - radians({4})) + sin(radians({1})) * sin(radians({2}))) )",
-                EARTH_RADIUS_KM, userLat, restaurantLat, userLon, restaurantLon);
+                EARTH_RADIUS_KM, location.getUserLat(), restaurantLat, location.getUserLon(), restaurantLon);
     }
 }
