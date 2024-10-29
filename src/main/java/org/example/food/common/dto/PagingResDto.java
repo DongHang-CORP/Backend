@@ -11,7 +11,7 @@ public class PagingResDto<T> {
 
     public PagingResDto(T data, int page, int totalPage, boolean nextPage) {
         this.data = data;
-        this.page = page + 1;
+        this.page = page;
         this.totalPage = totalPage;
         this.nextPage = nextPage;
     }
