@@ -14,7 +14,6 @@ import org.example.food.restaurant.exception.RestaurantExceptionType;
 import org.example.food.restaurant.repository.RestaurantQueryRepository;
 import org.example.food.restaurant.repository.RestaurantRepository;
 import org.example.food.user.entity.User;
-import org.example.food.video.dto.VideoReqDto;
 import org.example.food.video.dto.VideoResDto;
 import org.example.food.video.entity.Video;
 import org.example.food.video.repository.VideoRepository;
@@ -87,21 +86,6 @@ public class RestaurantServiceImpl implements RestaurantService {
         log.info("Deleted restaurant with ID: {}", id);
     }
 
-    @Transactional
-    public Restaurant findOrCreateRestaurant(VideoReqDto videoReqDto) {
-        return restaurantRepository.findByName(videoReqDto.getRestaurant())
-                .orElseGet(() -> {
-                    Restaurant restaurant = Restaurant.of(
-                            videoReqDto.getRestaurant(),
-                            videoReqDto.getLat(),
-                            videoReqDto.getLng(),
-                            videoReqDto.getCategory()
-                    );
-                    restaurantRepository.save(restaurant);
-                    log.info("Created restaurant: {}", restaurant.getName());
-                    return restaurant;
-                });
-    }
 
     @Override
     public Restaurant findRestaurantById(Long id) {
