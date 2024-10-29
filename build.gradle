@@ -34,8 +34,6 @@ dependencies {
     //aws 의존성
     implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.2'
     implementation 'com.amazonaws:aws-java-sdk-s3:1.12.100'
-    //mapper
-    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
     //jwt
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
@@ -73,7 +71,7 @@ tasks.withType(JavaCompile) {
 
 //java source set 에 Querydsl Q Class 위치 추가
 sourceSets {
-    main.java.srcDirs += [ generated ]
+    main.java.srcDirs += [generated]
 }
 
 //gradle clean 시, Q Class 디렉토리까지 삭제하도록 설정
