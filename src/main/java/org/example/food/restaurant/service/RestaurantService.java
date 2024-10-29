@@ -7,7 +7,6 @@ import org.example.food.restaurant.dto.RestaurantResDto;
 import org.example.food.restaurant.entity.Category;
 import org.example.food.restaurant.entity.Restaurant;
 import org.example.food.user.entity.User;
-import org.example.food.video.dto.VideoReqDto;
 
 import java.util.List;
 
@@ -23,7 +22,5 @@ public interface RestaurantService {
     Restaurant findRestaurantById(Long id);
 
     List<RestaurantResDto> getNearbyRestaurants(Location location, List<Category> categories);
-
-    Restaurant findOrCreateRestaurant(VideoReqDto videoReqDto);
 
 }
