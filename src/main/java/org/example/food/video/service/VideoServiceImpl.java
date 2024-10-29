@@ -2,15 +2,16 @@ package org.example.food.video.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.food.global.common.dto.Location;
+import org.example.food.like.repository.LikeRepository;
 import org.example.food.restaurant.entity.Restaurant;
+import org.example.food.restaurant.repository.RestaurantRepository;
 import org.example.food.user.entity.User;
-import org.example.food.video.entity.Video;
 import org.example.food.video.dto.VideoReqDto;
 import org.example.food.video.dto.VideoResDto;
+import org.example.food.video.entity.Video;
 import org.example.food.video.exception.VideoException;
 import org.example.food.video.exception.VideoExceptionType;
-import org.example.food.like.repository.LikeRepository;
-import org.example.food.restaurant.repository.RestaurantRepository;
 import org.example.food.video.repository.VideoQueryRepository;
 import org.example.food.video.repository.VideoRepository;
 import org.springframework.data.domain.Page;
@@ -35,25 +36,22 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public Page<VideoResDto> getAllVideos(Pageable pageable, User user) {
-        return getVideos(videoQueryRepository.findAllVideosWithPagination(pageable), user, pageable);
+        Page<Video> videoPage = videoRepository.findAll(pageable);
+        return convertToDto(videoPage, user);
     }
 
-    @Override
-    public Page<VideoResDto> getNearbyVideos(double userLat, double userLon, double radius, Pageable pageable, User user) {
-        return getVideos(videoQueryRepository.findVideosByLocationWithPagination(userLat, userLon, radius, pageable), user, pageable);
-    }
-
-    private Page<VideoResDto> getVideos(List<Video> videos, User user, Pageable pageable) {
-        List<VideoResDto> content = videos.stream()
+    private Page<VideoResDto> convertToDto(Page<Video> videoPage, User user) {
+        List<VideoResDto> content = videoPage.getContent().stream()
                 .map(video -> toVideoDto(video, user))
                 .collect(Collectors.toList());
 
-        int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), content.size());
+        return new PageImpl<>(content, videoPage.getPageable(), videoPage.getTotalElements());
+    }
 
-        List<VideoResDto> pageContent = content.subList(start, end);
-
-        return new PageImpl<>(pageContent, pageable, content.size());
+    @Override
+    public Page<VideoResDto> getNearbyVideos(Location request, Pageable pageable, User user) {
+        Page<Video> videoPage = videoQueryRepository.findVideosByLocationWithPagination(request, pageable);
+        return convertToDto(videoPage, user);
     }
 
     private VideoResDto toVideoDto(Video video, User user) {
@@ -61,7 +59,7 @@ public class VideoServiceImpl implements VideoService {
             return null;
         }
 
-        boolean isLike = user != null && likeRepository.findByUserAndVideo(user, video).isPresent(); // 좋아요 여부 확인
+        boolean isLike = user != null && likeRepository.findByUserAndVideo(user, video).isPresent();
         return VideoResDto.fromVideo(video, isLike);
     }
 

@@ -2,7 +2,8 @@ package org.example.food.video.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.food.global.common.dto.PagingResDto;
+import org.example.food.global.common.dto.Location;
+import org.example.food.global.common.dto.PagingDto;
 import org.example.food.restaurant.entity.Restaurant;
 import org.example.food.user.dto.CustomUserDetails;
 import org.example.food.user.entity.User;
@@ -30,11 +31,7 @@ public class VideoController {
         User user = userDetails != null ? userDetails.getUser() : null;
         Page<VideoResDto> videoResDtos = videoService.getAllVideos(pageable, user);
 
-        int currentPage = videoResDtos.getNumber();      // 현재 페이지
-        int totalPage = videoResDtos.getTotalPages();    // 총 페이지 수
-        boolean hasNextPage = videoResDtos.hasNext();    // 다음 페이지 여부
-
-        return ResponseEntity.ok(new PagingResDto<>(videoResDtos.getContent(), currentPage, totalPage, hasNextPage));
+        return ResponseEntity.ok(new PagingDto<>(videoResDtos.getContent(), videoResDtos.getNumber(), videoResDtos.getTotalPages()));
     }
 
     @PostMapping
@@ -65,19 +62,14 @@ public class VideoController {
 
     @GetMapping("/nearby")
     public ResponseEntity<?> getNearbyVideos(
-            @RequestParam double userLat,
-            @RequestParam double userLon,
-            @RequestParam(defaultValue = "5") double radius,
+            @RequestBody Location location,
             Pageable pageable,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         User user = userDetails != null ? userDetails.getUser() : null;
-        Page<VideoResDto> videoResDtos = videoService.getNearbyVideos(userLat, userLon, radius, pageable, user);
 
-        int currentPage = videoResDtos.getNumber();      // 현재 페이지
-        int totalPage = videoResDtos.getTotalPages();    // 총 페이지 수
-        boolean hasNextPage = videoResDtos.hasNext();    // 다음 페이지 여부
+        Page<VideoResDto> videoResDtos = videoService.getNearbyVideos(location, pageable, user);
 
-        return ResponseEntity.ok(new PagingResDto<>(videoResDtos.getContent(), currentPage, totalPage, hasNextPage));
+        return ResponseEntity.ok(new PagingDto<>(videoResDtos.getContent(), videoResDtos.getNumber(), videoResDtos.getTotalPages()));
     }
 }

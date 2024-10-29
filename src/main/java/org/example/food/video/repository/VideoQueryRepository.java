@@ -6,8 +6,11 @@ import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.example.food.domain.video.QVideo;
+import org.example.food.global.common.dto.Location;
+import org.example.food.video.entity.QVideo;
 import org.example.food.video.entity.Video;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -18,29 +21,26 @@ import java.util.List;
 public class VideoQueryRepository {
 
     private final JPAQueryFactory queryFactory;
-
     private static final double EARTH_RADIUS_KM = 6371.0; // 지구 반지름 (킬로미터 단위)
 
     // 하버사인 공식으로 반경 내의 비디오 검색
-    public List<Video> findVideosByLocationWithPagination(double userLat, double userLon, double radius, Pageable pageable) {
+    public Page<Video> findVideosByLocationWithPagination(Location request, Pageable pageable) {
         QVideo video = QVideo.video;
 
-        return queryFactory
+        // 쿼리 실행하여 결과 리스트 가져오기
+        List<Video> videos = queryFactory
                 .selectFrom(video)
-                .where(distanceWithinRadius(userLat, userLon, video.restaurant.lat, video.restaurant.lng, radius))
+                .where(distanceWithinRadius(request.getUserLat(), request.getUserLon(), video.restaurant.lat, video.restaurant.lng, request.getRadius()))
                 .offset(pageable.getOffset())  // offset 설정
-                .limit(pageable.getPageSize() + 1)  // 페이지 사이즈 + 1 설정 (다음 페이지 확인용)
+                .limit(pageable.getPageSize())  // 페이지 사이즈만 설정
                 .fetch();
-    }
 
-    public List<Video> findAllVideosWithPagination(Pageable pageable) {
-        QVideo video = QVideo.video;
-
-        return queryFactory
+        long total = queryFactory
                 .selectFrom(video)
-                .offset(pageable.getOffset())   // offset 설정
-                .limit(pageable.getPageSize() + 1)  // 페이지 사이즈 + 1 설정 (다음 페이지 존재 여부 확인용)
-                .fetch();
+                .where(distanceWithinRadius(request.getUserLat(), request.getUserLon(), video.restaurant.lat, video.restaurant.lng, request.getRadius()))
+                .fetchCount(); // 전체 데이터 수 조회
+
+        return new PageImpl<>(videos, pageable, total);
     }
 
     // 하버사인 공식으로 거리 계산하여 반경 내인지 확인하는 메서드
@@ -50,8 +50,6 @@ public class VideoQueryRepository {
                                                    double radius) {
         // 하버사인 거리 계산을 위한 식
         NumberTemplate<Double> distance = calculateDistance(userLat, userLon, restaurantLat, restaurantLon);
-
-        // 계산된 거리가 반경 내인지 확인
         return distance.loe(radius);
     }
 

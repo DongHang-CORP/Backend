@@ -2,13 +2,14 @@ package org.example.food.restaurant.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.food.global.common.dto.Location;
 import org.example.food.restaurant.dto.RestaurantDetailsDto;
 import org.example.food.restaurant.dto.RestaurantReqDto;
 import org.example.food.restaurant.dto.RestaurantResDto;
-import org.example.food.user.entity.User;
-import org.example.food.user.dto.CustomUserDetails;
 import org.example.food.restaurant.entity.Category;
 import org.example.food.restaurant.service.RestaurantServiceImpl;
+import org.example.food.user.dto.CustomUserDetails;
+import org.example.food.user.entity.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -54,12 +55,10 @@ public class RestaurantController {
 
     @GetMapping("/nearby")
     public ResponseEntity<List<RestaurantResDto>> getNearbyRestaurants(
-            @RequestParam double userLat,
-            @RequestParam double userLon,
-            @RequestParam(defaultValue = "5") double radius,
+            @RequestBody Location location,
             @RequestParam(required = false) List<Category> categories) {
 
-        List<RestaurantResDto> restaurants = restaurantService.getNearbyRestaurants(userLat, userLon, radius, categories);
+        List<RestaurantResDto> restaurants = restaurantService.getNearbyRestaurants(location, categories);
         return ResponseEntity.ok(restaurants);
     }
 }

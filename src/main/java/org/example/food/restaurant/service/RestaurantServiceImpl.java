@@ -2,20 +2,21 @@ package org.example.food.restaurant.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.food.restaurant.entity.Restaurant;
+import org.example.food.global.common.dto.Location;
+import org.example.food.like.repository.LikeRepository;
 import org.example.food.restaurant.dto.RestaurantDetailsDto;
 import org.example.food.restaurant.dto.RestaurantReqDto;
 import org.example.food.restaurant.dto.RestaurantResDto;
-import org.example.food.user.entity.User;
 import org.example.food.restaurant.entity.Category;
-import org.example.food.video.entity.Video;
-import org.example.food.video.dto.VideoReqDto;
-import org.example.food.video.dto.VideoResDto;
+import org.example.food.restaurant.entity.Restaurant;
 import org.example.food.restaurant.exception.RestaurantException;
 import org.example.food.restaurant.exception.RestaurantExceptionType;
-import org.example.food.like.repository.LikeRepository;
 import org.example.food.restaurant.repository.RestaurantQueryRepository;
 import org.example.food.restaurant.repository.RestaurantRepository;
+import org.example.food.user.entity.User;
+import org.example.food.video.dto.VideoReqDto;
+import org.example.food.video.dto.VideoResDto;
+import org.example.food.video.entity.Video;
 import org.example.food.video.repository.VideoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,8 +110,8 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public List<RestaurantResDto> getNearbyRestaurants(double userLat, double userLon, double radius, List<Category> categories) {
-        return restaurantQueryRepository.findRestaurantsByLocation(userLat, userLon, radius, categories).stream()
+    public List<RestaurantResDto> getNearbyRestaurants(Location location, List<Category> categories) {
+        return restaurantQueryRepository.findRestaurantsByLocation(location, categories).stream()
                 .map(RestaurantResDto::toRestaurantDto)
                 .collect(Collectors.toList());
     }

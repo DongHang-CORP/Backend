@@ -6,9 +6,10 @@ import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.example.food.domain.restaurant.QRestaurant;
-import org.example.food.restaurant.entity.Restaurant;
+import org.example.food.global.common.dto.Location;
 import org.example.food.restaurant.entity.Category;
+import org.example.food.restaurant.entity.QRestaurant;
+import org.example.food.restaurant.entity.Restaurant;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,14 +20,14 @@ public class RestaurantQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    private static final double EARTH_RADIUS_KM = 6371.0; // 지구 반지름 (킬로미터 단위)
+    private static final double EARTH_RADIUS_KM = 6371.0;
 
     // 하버사인 공식으로 반경 내의 음식점 검색
-    public List<Restaurant> findRestaurantsByLocation(double userLat, double userLon, double radius, List<Category> categories) {
-        QRestaurant restaurant = QRestaurant.restaurant; // QueryDSL Q타입 객체
+    public List<Restaurant> findRestaurantsByLocation(Location location, List<Category> categories) {
+        QRestaurant restaurant = QRestaurant.restaurant;
         return queryFactory
                 .selectFrom(restaurant)
-                .where(distanceWithinRadius(userLat, userLon, restaurant.lat, restaurant.lng, radius)
+                .where(distanceWithinRadius(location.getUserLat(), location.getUserLon(), restaurant.lat, restaurant.lng, location.getRadius())
                         .and(categoryIn(categories))) // 카테고리 필터 추가
                 .fetch();
     }
