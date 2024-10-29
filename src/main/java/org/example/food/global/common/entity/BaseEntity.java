@@ -3,6 +3,7 @@ package org.example.food.global.common.entity;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -18,13 +19,9 @@ public class BaseEntity {
 
     @CreatedDate
     @Column(updatable = false)
-    private LocalDateTime createdDate;
+    private LocalDateTime createdDateTime;
 
-    public Long id() {
-        return id;
-    }
+    @LastModifiedBy
+    private LocalDateTime modifiedDateTime;
 
-    public LocalDateTime createdDate() {
-        return createdDate;
-    }
 }
