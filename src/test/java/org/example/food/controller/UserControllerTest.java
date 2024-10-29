@@ -1,19 +1,13 @@
 package org.example.food.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.food.domain.user.dto.LoginDto;
-import org.example.food.domain.user.dto.UserReqDto;
-import org.example.food.domain.user.dto.UserResDto;
-import org.example.food.service.UserService;
+import org.example.food.user.dto.UserReqDto;
+import org.example.food.user.dto.UserResDto;
+import org.example.food.user.service.UserService;
 import org.example.food.testbase.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;

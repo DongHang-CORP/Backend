@@ -1,17 +1,16 @@
 package org.example.food.repository;
 
-import org.example.food.domain.user.User;
+import org.example.food.user.entity.User;
 import org.example.food.testbase.RepositoryTest;
+import org.example.food.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class UserRepositoryTest extends RepositoryTest {
 

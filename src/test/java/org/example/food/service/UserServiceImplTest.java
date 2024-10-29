@@ -1,17 +1,14 @@
 package org.example.food.service;
 
 import org.assertj.core.api.Assertions;
-import org.example.food.domain.user.User;
-import org.example.food.domain.user.dto.LoginDto;
-import org.example.food.domain.user.dto.UserReqDto;
-import org.example.food.domain.user.dto.UserResDto;
-import org.example.food.repository.UserRepository;
+import org.example.food.user.entity.User;
+import org.example.food.user.dto.UserReqDto;
+import org.example.food.user.repository.UserRepository;
+import org.example.food.user.service.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @SuppressWarnings("NonAsciiCharacters")
@@ -48,7 +45,7 @@ class UserServiceImplTest {
 //        Assertions.assertThat(loginDto.getEmail()).isEqualTo(userResDto.getEmail());
 //    }
 
-    private UserReqDto createDummyUser(){
+    private UserReqDto createDummyUser() {
         UserReqDto user = new UserReqDto();
         user.setEmail("urinaner@naver.com");
         user.setNickname("jyj");
