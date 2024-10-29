@@ -3,9 +3,8 @@ package org.example.food.video.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.food.global.common.dto.Location;
-import org.example.food.like.repository.LikeRepository;
+import org.example.food.restaurant.entity.Category;
 import org.example.food.restaurant.entity.Restaurant;
-import org.example.food.restaurant.repository.RestaurantRepository;
 import org.example.food.user.entity.User;
 import org.example.food.video.dto.VideoReqDto;
 import org.example.food.video.dto.VideoResDto;
@@ -31,8 +30,7 @@ public class VideoServiceImpl implements VideoService {
 
     private final VideoRepository videoRepository;
     private final VideoQueryRepository videoQueryRepository;
-    private final RestaurantRepository restaurantRepository;
-    private final LikeRepository likeRepository;
+    private final VideoDtoMapper videoDtoMapper;
 
     @Override
     public Page<VideoResDto> getAllVideos(Pageable pageable, User user) {
@@ -40,27 +38,10 @@ public class VideoServiceImpl implements VideoService {
         return convertToDto(videoPage, user);
     }
 
-    private Page<VideoResDto> convertToDto(Page<Video> videoPage, User user) {
-        List<VideoResDto> content = videoPage.getContent().stream()
-                .map(video -> toVideoDto(video, user))
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(content, videoPage.getPageable(), videoPage.getTotalElements());
-    }
-
     @Override
     public Page<VideoResDto> getNearbyVideos(Location request, Pageable pageable, User user) {
         Page<Video> videoPage = videoQueryRepository.findVideosByLocationWithPagination(request, pageable);
         return convertToDto(videoPage, user);
-    }
-
-    private VideoResDto toVideoDto(Video video, User user) {
-        if (video == null) {
-            return null;
-        }
-
-        boolean isLike = user != null && likeRepository.findByUserAndVideo(user, video).isPresent();
-        return VideoResDto.fromVideo(video, isLike);
     }
 
     @Override
@@ -70,7 +51,6 @@ public class VideoServiceImpl implements VideoService {
         videoRepository.save(video);
         return video.getId();
     }
-
 
     @Override
     @Transactional
@@ -87,19 +67,18 @@ public class VideoServiceImpl implements VideoService {
                 .orElseThrow(() -> new VideoException(VideoExceptionType.NOT_FOUND_VIDEO));
     }
 
-    @Transactional
-    public Restaurant findOrCreateRestaurant(VideoReqDto videoReqDto) {
-        return restaurantRepository.findByName(videoReqDto.getRestaurant())
-                .orElseGet(() -> {
-                    Restaurant restaurant = Restaurant.of(
-                            videoReqDto.getRestaurant(),
-                            videoReqDto.getLat(),
-                            videoReqDto.getLng(),
-                            videoReqDto.getCategory()
-                    );
-                    restaurantRepository.save(restaurant);
-                    return restaurant;
-                });
+    public List<VideoResDto> getVideosByCategories(List<Category> categories) {
+        List<Video> videos = videoRepository.findAllByCategoryIn(categories);
+        return videos.stream()
+                .map(VideoResDto::of)
+                .collect(Collectors.toList());
     }
 
+    private Page<VideoResDto> convertToDto(Page<Video> videoPage, User user) {
+        List<VideoResDto> content = videoPage.getContent().stream()
+                .map(video -> videoDtoMapper.toVideoDto(video, user))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(content, videoPage.getPageable(), videoPage.getTotalElements());
+    }
 }

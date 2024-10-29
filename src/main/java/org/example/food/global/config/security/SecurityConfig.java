@@ -77,6 +77,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/videos").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/restaurants").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/videos/**").authenticated()
+                .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().permitAll()
         );
 

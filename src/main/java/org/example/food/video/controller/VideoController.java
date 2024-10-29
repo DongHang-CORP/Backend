@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.food.global.common.dto.Location;
 import org.example.food.global.common.dto.PagingDto;
+import org.example.food.restaurant.entity.Category;
 import org.example.food.restaurant.entity.Restaurant;
+import org.example.food.restaurant.service.RestaurantServiceImpl;
 import org.example.food.user.dto.CustomUserDetails;
 import org.example.food.user.entity.User;
 import org.example.food.video.dto.VideoReqDto;
@@ -18,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -25,12 +29,13 @@ import org.springframework.web.bind.annotation.*;
 public class VideoController {
 
     private final VideoServiceImpl videoService;
+    private final RestaurantServiceImpl restaurantService;
 
     @GetMapping
     public ResponseEntity<?> getAllVideos(Pageable pageable, @AuthenticationPrincipal CustomUserDetails userDetails) {
         User user = userDetails != null ? userDetails.getUser() : null;
-        Page<VideoResDto> videoResDtos = videoService.getAllVideos(pageable, user);
 
+        Page<VideoResDto> videoResDtos = videoService.getAllVideos(pageable, user);
         return ResponseEntity.ok(new PagingDto<>(videoResDtos.getContent(), videoResDtos.getNumber(), videoResDtos.getTotalPages()));
     }
 
@@ -41,7 +46,7 @@ public class VideoController {
 
         User user = userDetails.getUser();
 
-        Restaurant restaurant = videoService.findOrCreateRestaurant(videoReqDto);
+        Restaurant restaurant = restaurantService.findOrCreateRestaurant(videoReqDto);
 
         Long videoId = videoService.createVideo(videoReqDto, user, restaurant);
         return ResponseEntity.ok(videoId);
@@ -58,6 +63,12 @@ public class VideoController {
 
         videoService.deleteVideo(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/category")
+    public ResponseEntity<List<VideoResDto>> getVideosByCategories(@RequestParam List<Category> categories) {
+        List<VideoResDto> videos = videoService.getVideosByCategories(categories);
+        return ResponseEntity.ok(videos);
     }
 
     @GetMapping("/nearby")

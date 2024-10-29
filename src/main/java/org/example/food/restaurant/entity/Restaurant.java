@@ -2,11 +2,10 @@ package org.example.food.restaurant.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.food.restaurant.dto.RestaurantReqDto;
 import org.example.food.video.entity.Video;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Getter
@@ -28,7 +27,7 @@ public class Restaurant {
     private double lng;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Video> videos;
+    private List<Video> videos = new ArrayList<>();
 
     public static Restaurant of(String name, double lat, double lng, Category category) {
         return Restaurant.builder()
@@ -38,14 +37,4 @@ public class Restaurant {
                 .category(category)
                 .build();
     }
-
-    public static Restaurant toEntity(RestaurantReqDto dto) {
-        return Optional.ofNullable(dto).map(d -> Restaurant.builder()
-                .name(d.getName())
-                .lat(d.getLatitude())
-                .lng(d.getLongitude())
-                .category(d.getCategory())
-                .build()).orElse(null);
-    }
-
 }
