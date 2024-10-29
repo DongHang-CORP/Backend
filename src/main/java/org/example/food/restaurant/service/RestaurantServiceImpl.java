@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.food.global.common.dto.Location;
 import org.example.food.like.repository.LikeRepository;
 import org.example.food.restaurant.dto.RestaurantDetailsDto;
-import org.example.food.restaurant.dto.RestaurantReqDto;
 import org.example.food.restaurant.dto.RestaurantResDto;
 import org.example.food.restaurant.entity.Category;
 import org.example.food.restaurant.entity.Restaurant;
@@ -21,8 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.example.food.restaurant.entity.Restaurant.toEntity;
 
 @Service
 @RequiredArgsConstructor
@@ -50,16 +47,6 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         return new RestaurantDetailsDto(restaurant, videoDtos);
     }
-
-    @Override
-    @Transactional
-    public Long createRestaurant(RestaurantReqDto restaurantReqDto) {
-        Restaurant restaurant = toEntity(restaurantReqDto);
-        restaurantRepository.save(restaurant);
-        log.info("Created restaurant: {}", restaurant.getName());
-        return restaurant.getId();
-    }
-
 
     @Override
     @Transactional

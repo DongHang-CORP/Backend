@@ -2,7 +2,6 @@ package org.example.food.restaurant.service;
 
 import org.example.food.global.common.dto.Location;
 import org.example.food.restaurant.dto.RestaurantDetailsDto;
-import org.example.food.restaurant.dto.RestaurantReqDto;
 import org.example.food.restaurant.dto.RestaurantResDto;
 import org.example.food.restaurant.entity.Category;
 import org.example.food.restaurant.entity.Restaurant;
@@ -14,8 +13,6 @@ public interface RestaurantService {
     List<RestaurantResDto> getAllRestaurants();
 
     RestaurantDetailsDto getRestaurantById(Long id, User user);
-
-    Long createRestaurant(RestaurantReqDto restaurantReqDto);
 
     void deleteRestaurant(Long id);
 
