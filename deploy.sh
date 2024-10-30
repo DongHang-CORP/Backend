@@ -6,5 +6,5 @@
 # export KUBECONFIG=./kubeconfig.yaml  # kubeconfig 파일 경로
 
 # 애플리케이션 배포
-kubectl apply -f kubernetes/deployment.yaml
-kubectl apply -f kubernetes/service.yaml
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml

@@ -23,3 +23,4 @@
 | 2024.10.28 18:22 | change docker auth to 777      |
 | 2024.10.28 18:50 | deploy auth set absolute       |
 | 2024.10.28 18:50 | test                           |
+| 2024.10.28 18:50 | edit k8s file path             |
