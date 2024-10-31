@@ -7,6 +7,6 @@ spec:
     app: nginx
   ports:
     - protocol: TCP
-      port: 80
+      port: 80  # Nginx가 외부에 노출할 포트
       targetPort: 80
-  type: LoadBalancer
+  type: LoadBalancer  # 외부 트래픽을 Nginx로 라우팅

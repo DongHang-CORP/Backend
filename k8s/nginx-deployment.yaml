@@ -1,7 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-reverse-proxy
+  name: nginx-deployment
+  labels:
+    app: nginx
 spec:
   replicas: 1
   selector:
@@ -17,7 +19,7 @@ spec:
           image: nginx:latest
           volumeMounts:
             - name: nginx-config-volume
-              mountPath: /etc/nginx/nginx.conf  # ConfigMap을 Nginx 설정에 연결
+              mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
       volumes:
         - name: nginx-config-volume
