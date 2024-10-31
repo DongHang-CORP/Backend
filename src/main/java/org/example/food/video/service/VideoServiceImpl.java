@@ -11,6 +11,7 @@ import org.example.food.video.dto.VideoResDto;
 import org.example.food.video.entity.Video;
 import org.example.food.video.exception.VideoException;
 import org.example.food.video.exception.VideoExceptionType;
+import org.example.food.video.mapper.VideoLikeDtoMapper;
 import org.example.food.video.repository.VideoQueryRepository;
 import org.example.food.video.repository.VideoRepository;
 import org.springframework.data.domain.Page;
@@ -30,7 +31,7 @@ public class VideoServiceImpl implements VideoService {
 
     private final VideoRepository videoRepository;
     private final VideoQueryRepository videoQueryRepository;
-    private final VideoDtoMapper videoDtoMapper;
+    private final VideoLikeDtoMapper videoLikeDtoMapper;
 
     @Override
     public Page<VideoResDto> getAllVideos(Pageable pageable, User user) {
@@ -76,7 +77,7 @@ public class VideoServiceImpl implements VideoService {
 
     private Page<VideoResDto> convertToDto(Page<Video> videoPage, User user) {
         List<VideoResDto> content = videoPage.getContent().stream()
-                .map(video -> videoDtoMapper.toVideoDto(video, user))
+                .map(video -> videoLikeDtoMapper.toVideoDto(video, user))
                 .collect(Collectors.toList());
 
         return new PageImpl<>(content, videoPage.getPageable(), videoPage.getTotalElements());

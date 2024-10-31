@@ -14,7 +14,7 @@ import org.example.food.restaurant.repository.RestaurantRepository;
 import org.example.food.user.entity.User;
 import org.example.food.video.dto.VideoReqDto;
 import org.example.food.video.dto.VideoResDto;
-import org.example.food.video.service.VideoDtoMapper;
+import org.example.food.video.mapper.VideoLikeDtoMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +29,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final RestaurantQueryRepository restaurantQueryRepository;
-    private final VideoDtoMapper videoDtoMapper;
+    private final VideoLikeDtoMapper videoLikeDtoMapper;
 
     @Override
     public List<RestaurantResDto> getAllRestaurants() {
@@ -42,7 +42,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public RestaurantDetailsDto getRestaurantById(Long id, User user) {
         Restaurant restaurant = findRestaurantById(id);
         List<VideoResDto> videoDtos = restaurant.getVideos().stream()
-                .map(video -> videoDtoMapper.toVideoDto(video, user))
+                .map(video -> videoLikeDtoMapper.toVideoDto(video, user))
                 .collect(Collectors.toList());
 
         return new RestaurantDetailsDto(restaurant, videoDtos);

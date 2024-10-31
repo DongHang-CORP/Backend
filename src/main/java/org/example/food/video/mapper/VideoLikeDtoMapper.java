@@ -1,4 +1,4 @@
-package org.example.food.video.service;
+package org.example.food.video.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.example.food.like.repository.LikeRepository;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class VideoDtoMapper {
+public class VideoLikeDtoMapper {
     private final LikeRepository likeRepository;
 
     public VideoResDto toVideoDto(Video video, User user) {
