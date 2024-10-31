@@ -60,13 +60,24 @@ pipeline {
             steps {
                 script {
                     echo "Stage: Deploy started"
+
+                    // 네임스페이스 목록 출력 및 네임스페이스 확인
+                    echo "Checking available namespaces:"
+                    sh 'kubectl get namespaces'
+
+                    // 설정된 네임스페이스로 kubectl create 권한 확인
+                    def namespace = 'default' // 여기서 원하는 네임스페이스로 변경할 수 있음
+                    echo "Checking create permission in namespace: ${namespace}"
+                    sh "kubectl auth can-i create deployment --namespace=${namespace} || echo 'Insufficient permissions to create deployment in ${namespace} namespace.'"
+
+                    // 배포 진행
                     echo "Deploying the project to Kubernetes"
                     sh 'export KUBECONFIG=$KUBECONFIG && /var/jenkins_home/workspace/cicd/deploy.sh'
-                    
+
                     // 배포된 파드 IP 주소 확인
                     echo "Checking pod IPs after deployment"
-                    sh 'kubectl get pods -o wide'
-                    
+                    sh 'kubectl get pods -o wide --namespace=${namespace}'
+
                     echo "Stage: Deploy completed"
                 }
             }

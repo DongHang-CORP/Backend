@@ -26,3 +26,4 @@
 | 2024.10.28 18:50 | edit k8s file path             |
 | 2024.10.30 18:17 | test                           |
 | 2024.10.31 18:17 | test2                          |
+| 2024.10.31 21:41 | k8s namespace, auth check      |
