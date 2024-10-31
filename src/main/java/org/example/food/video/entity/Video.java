@@ -5,8 +5,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.food.restaurant.entity.Restaurant;
 import org.example.food.restaurant.entity.Category;
+import org.example.food.restaurant.entity.Restaurant;
 import org.example.food.user.entity.User;
 import org.example.food.video.dto.VideoReqDto;
 
@@ -34,8 +34,8 @@ public class Video {
 
     private int likeCount;
 
-    @Version
-    private Integer version;
+//    @Version
+//    private Integer version;
 
     @Builder
     private Video(User user, Restaurant restaurant, String url, String content, Category category) {
