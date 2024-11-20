@@ -1,54 +1,90 @@
-# 뭐먹지? Backend
+# 뭐먹지? - 숏폼 동영상 기반의 직관적인 맛집 탐색 서비스
 
-![Project Logo](https://via.placeholder.com/150) <!-- 로고가 있을 경우 경로 삽입 -->
-
-> 프로젝트 한 줄 소개 (예: A backend service for handling user authentication and data management.)
+**"뭐먹지?"**는 현대인의 식사 선택 고민을 해결하고, 보다 나은 외식 경험을 제공하기 위한 혁신적인 푸드테크 플랫폼입니다. 위치 기반 기술과 동영상 콘텐츠를 결합해 사용자들에게 직관적이고 신뢰할 수 있는 맛집 정보를 제공합니다.
 
 ---
 
-## Table of Contents
-- [About the Project](#about-the-project)
-- [Features](#features)
-- [Getting Started](#getting-started)
-- [Tech Stack](#tech-stack)
-- [Contributors](#contributors)
-- [License](#license)
+## 프로젝트 개요
+
+**서비스 목적:**  
+"뭐먹지?"는 사용자들이 효율적이고 빠르게 맛집을 찾을 수 있도록, 위치 기반으로 생생한 동영상 콘텐츠를 큐레이션합니다. 직관적인 사용자 경험을 통해 복잡한 검색 과정 없이 맛집을 탐색할 수 있습니다.
 
 ---
 
-## About the Project
-프로젝트에 대한 간단한 소개입니다.  
-이 프로젝트는 무엇을 위해 만들어졌는지, 그리고 어떤 문제를 해결하는지 설명합니다.
+## 주요 기능
 
-### 주요 기능
-- **기능1**: 설명 (예: 사용자 인증 및 세션 관리)
-- **기능2**: 설명 (예: 데이터 저장 및 CRUD 기능 제공)
-- **기능3**: 설명 (예: 외부 API와 연동하여 데이터 조회)
+- **홈 화면**
+  - 사용자 근처의 맛집 정보를 직관적으로 탐색할 수 있도록 구성.
+  - 흥미를 자극하는 문구와 로그인 버튼 배치.
+- **로그인/회원가입 기능**
+  - 이메일 인증을 통해 보안성 강화.
+  - 인증번호 발송 및 사용자 로그인/회원가입 절차.
+- **동영상 제작 기능**
+  - 사용자들이 음식 사진이나 동영상을 업로드하고, 다양한 콘텐츠를 무한 스크롤로 탐색 가능.
+- **지도 서비스**
+  - 위치 기반 맛집 탐색 기능과 다양한 필터 제공.
+  - 사용자의 취향에 맞는 맛집을 지도에서 쉽게 찾을 수 있음.
+- **영상 서비스**
+  - 동영상에 텍스트와 이모티콘 추가 기능 제공.
+  - 사용자 맞춤형 콘텐츠 제작 가능.
 
 ---
 
-## Getting Started
+## 개발 환경
 
-### Prerequisites
-프로젝트 실행에 필요한 주요 요구 사항들입니다. (예: Docker, Node.js)
-```bash
-# Node.js가 설치되어 있어야 합니다.
-node -v
-```
+### **Backend**
+- **IDE**: IntelliJ IDEA
+- **언어**: Java 17 (Open JDK 17)
+- **프레임워크**: Spring Boot 3.3.2
+- **빌드 도구**: Gradle(8.8)
+- **CI/CD**: Jenkins
 
-## Tech Stack
+### **서버 아키텍처**
+- **OS**: macOS Sequoia 15.0.1 / Ubuntu 22.04
+- **Database**: H2 In-memory Database, MySQL (마스터-슬레이브 구조)
+- **CI/CD**: Jenkins (Docker 기반)
+- **컨테이너 관리**: Kubernetes
+- **무중단 배포**: Nginx (Blue-Green 방식)
+- **오브젝트 스토리지**: AWS S3
+- **테스팅 툴**: Jacoco
 
-	•	Backend: Node.js, Express
-	•	Database: MongoDB
-	•	Others: Docker, AWS (배포 시)
+---
 
-## Contribution
-프로젝트에 기여한 내용 및 각 기여자의 역할입니다.
+## 시스템 흐름도
+<img width="477" alt="스크린샷 2024-11-20 오전 11 22 24" src="https://github.com/user-attachments/assets/89fd633f-8c33-46d4-9ae5-12e07900e4ad">
+<img width="447" alt="스크린샷 2024-11-20 오전 11 22 48" src="https://github.com/user-attachments/assets/7204d608-2376-4fe3-ab71-255450068b70">
+<img width="461" alt="스크린샷 2024-11-20 오전 11 22 55" src="https://github.com/user-attachments/assets/004f55b1-7ccd-42a4-a843-c7233a841f01">
 
-| 기여자 이름    | 기여 내용               | 역할           |
-|-----------|---------------------|--------------|
-| username1 | 사용자 인증 기능 구현        | Backend 개발   |
-| username2 | RESTful API 설계 및 구현 | API 설계 및 관리  |
-| username3 | 데이터베이스 스키마 설계       | Database 관리자 |
-| username4 | 테스트 케이스 작성 및 검증     | QA 및 테스트     |
-| username5 | 문서화 및 README 작성     | 문서화 담당       |
+
+**1. 사용자 요청 처리**  
+- Nginx 리버스 프록시 → Kubernetes 클러스터로 트래픽 라우팅 → Docker 컨테이너 실행  
+- Spring Boot 애플리케이션 및 H2 데이터베이스와 연동하여 사용자 요청 처리  
+- MySQL 데이터베이스: 마스터-슬레이브 구조로 성능 최적화
+
+**2. 릴스 처리 흐름**  
+- 이미지 업로드 → AWS S3에 저장 → CloudFront로 콘텐츠 캐싱 및 배포  
+- SSL 인증(ACM) 및 HTTPS 통신을 통한 보안 강화
+
+**3. CI/CD 파이프라인**  
+- Pull Request 트리거 → 빌드 및 테스트 자동화 → 코드 품질 분석 (SonarQube, Jacoco)  
+- Docker 이미지 생성 → Kubernetes 클러스터에 배포 및 WAS 관리
+
+---
+
+## 기대 효과
+
+### **사용자 측면**
+- **의사결정 효율성 향상**: 직관적인 동영상 정보를 통해 빠른 메뉴 선택 가능.
+- **정보 신뢰성 강화**: 실제 방문자들의 생생한 영상 후기를 통한 신뢰도 제고.
+- **사용자 경험 개선**: 위치 기반 맞춤형 추천 및 직관적 UI/UX 제공.
+
+### **사업자 측면**
+- **마케팅 효과성 증대**: 자연스러운 홍보 효과 및 잠재 고객층 확대.
+- **고객 신뢰도 구축**: 투명한 정보 공개 및 실제 피드백 확보.
+- **운영 효율성 향상**: 디지털 마케팅 비용 절감 및 데이터 기반 서비스 최적화.
+
+### **사회적 측면**
+- **지역 경제 활성화**: 숨은 맛집 발굴로 소상공인 지원 및 골목상권 활성화.
+- **식문화 발전**: K-food 글로벌화 및 외국인 접근성 향상.
+- **소비 문화 개선**: 투명하고 신뢰성 있는 맛집 정보 제공.
+
