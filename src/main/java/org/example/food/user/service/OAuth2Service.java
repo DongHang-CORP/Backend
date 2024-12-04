@@ -31,39 +31,41 @@ public class OAuth2Service {
     }
 
 //    서비스 로그인을 위한 유저 로그인 로직 처리 ~ custom user details를 활용하자
-//    public OAuth2LoginDto oAuth2Login(String code, String providerId) {
-//        String accessToken = getAccessToken(code, providerId);
-//        JsonNode userResourceNode = getUserResource(accessToken, providerId);
-//        assert userResourceNode != null;
-//
-//        String uid = userResourceNode.get("id").asText();
+    public OAuth2LoginDto oAuth2Login(String code, String providerId) {
+        String accessToken = getAccessToken(code, providerId);
+        JsonNode userResourceNode = getUserResource(accessToken, providerId);
+        assert userResourceNode != null;
+
+        // id만 가져오고, 닉네임이랑 프로필 이미지는 가져 올 필요 없음
+        String uid = userResourceNode.get("id").asText();
 //        String nickname = userResourceNode.get("name").asText();
 //        String profile = userResourceNode.get("picture").asText();
-//
-//        User user = userRepository.findByUidAndProvider(uid, providerId);
-//        // 새 유저 등록
-//        if (user == null) {
-//            user = userRepository.save(new User(nickname, uid, providerId, profile));
-//        } else {
-//            if (!user.getName().equals(nickname) || !user.getProfile().equals(profile)) {
-//                user.setName(nickname);
-//                user.setProfile(profile);
-//                user = userRepository.save(user);
-//            }
-//        }
-//
-//        var tokenPair = jwtAuthenticationService.generateTokenPair(
-//                user.getId().toString(),
-//                user.getProvider(),
-//                user.getUid()
-//        );
-//
-//        return new OAuth2LoginDto(
-//                new SimpleUserResponseDto(user),
-//                tokenPair.getFirst(),
-//                tokenPair.getSecond()
-//        );
-//    }
+
+        // 프로바이더 기준 유저 검색 쿼리 구현해야하고
+        User user = userRepository.findByUidAndProvider(uid, providerId);
+        // 새 유저 등록
+        if (user == null) {
+            user = userRepository.save(new User(new Long(uid), providerId));
+        } else {
+            if (!user.getName().equals(nickname) || !user.getProfile().equals(profile)) {
+                user.setName(nickname);
+                user.setProfile(profile);
+                user = userRepository.save(user);
+            }
+        }
+
+        var tokenPair = jwtAuthenticationService.generateTokenPair(
+                user.getId().toString(),
+                user.getProvider(),
+                user.getUid()
+        );
+
+        return new OAuth2LoginDto(
+                new SimpleUserResponseDto(user),
+                tokenPair.getFirst(),
+                tokenPair.getSecond()
+        );
+    }
 
     // 프로바이더 검증
     public HttpHeaders oAuth2Redirect(String registrationId) {

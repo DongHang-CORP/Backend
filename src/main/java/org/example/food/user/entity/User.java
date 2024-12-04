@@ -1,10 +1,7 @@
 package org.example.food.user.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
@@ -29,13 +26,16 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column
+    private String providerId; //공급자 (google, facebook ...)
+
     private String role;
 
-    //  @Column
-    //    private String provider; //공급자 (google, facebook ...)
-    //
-    //    @Column
-    //    private String providerId; //공급 아이디
+    @Builder
+    public User(Long id, String providerId) {
+        this.id = id;
+        this.providerId = providerId;
+    }
 
 //    @Builder
 //    public UserEntity(String username, String nickname, String email, String profileImage, String role, String provider, String providerId) {

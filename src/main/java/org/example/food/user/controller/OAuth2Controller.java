@@ -20,6 +20,7 @@ public class OAuth2Controller {
         this.oAuth2Service = oAuth2Service;
     }
 
+    // Oauth 인증 요청이 들어와
     @Operation(summary = "OAuth2 로그인 화면으로 리다이렉트")
     @GetMapping("/authorization/{registrationId}")
     public ResponseEntity<HttpHeaders> oAuth2Redirect(
@@ -28,12 +29,13 @@ public class OAuth2Controller {
         return new ResponseEntity<>(oAuth2Service.oAuth2Redirect(registrationId), HttpStatus.MOVED_PERMANENTLY);
     }
 
-//    @Operation(summary = "OAuth2 로그인 후 Token 발급")
-//    @GetMapping("/code/{registrationId}")
-//    public ResponseEntity<OAuth2LoginDto> oAuth2Code(
-//            @RequestParam String code,
-//            @PathVariable("providerId") String registrationId
-//    ) {
-//        return ResponseEntity.ok(oAuth2Service.oAuth2Login(code, registrationId));
-//    }
+    // 아, 토큰을 발급하는게 필요하구나
+    @Operation(summary = "OAuth2 로그인 후 Token 발급")
+    @GetMapping("/code/{registrationId}")
+    public ResponseEntity<OAuth2LoginDto> oAuth2Code(
+            @RequestParam String code,
+            @PathVariable("providerId") String registrationId
+    ) {
+        return ResponseEntity.ok(oAuth2Service.oAuth2Login(code, registrationId));
+    }
 }

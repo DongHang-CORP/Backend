@@ -38,6 +38,7 @@ public class NaverOAuth2Service {
         return headers;
     }
 
+    // 액세스 토큰 발급받기
     public String getAccessToken(String code, String registrationId) {
         LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", code);
