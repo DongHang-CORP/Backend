@@ -37,7 +37,7 @@ public class OAuth2Service {
         assert userResourceNode != null;
 
         // id만 가져오고, 닉네임이랑 프로필 이미지는 가져 올 필요 없음
-        String uid = userResourceNode.get("id").asText();
+        Long uid = Long.parseLong(userResourceNode.get("id").asText());
 //        String nickname = userResourceNode.get("name").asText();
 //        String profile = userResourceNode.get("picture").asText();
 
@@ -45,19 +45,13 @@ public class OAuth2Service {
         User user = userRepository.findByUidAndProvider(uid, providerId);
         // 새 유저 등록
         if (user == null) {
-            user = userRepository.save(new User(new Long(uid), providerId));
-        } else {
-            if (!user.getName().equals(nickname) || !user.getProfile().equals(profile)) {
-                user.setName(nickname);
-                user.setProfile(profile);
-                user = userRepository.save(user);
-            }
+            user = userRepository.save(new User(uid, providerId));
         }
 
         var tokenPair = jwtAuthenticationService.generateTokenPair(
                 user.getId().toString(),
-                user.getProvider(),
-                user.getUid()
+                user.getProviderId(),
+                user.getId()
         );
 
         return new OAuth2LoginDto(

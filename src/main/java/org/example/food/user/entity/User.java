@@ -27,7 +27,7 @@ public class User {
     private String email;
 
     @Column
-    private String providerId; //공급자 (google, facebook ...)
+    private String providerId; //공급자 (naver, kakao ...)
 
     private String role;
 
@@ -37,20 +37,16 @@ public class User {
         this.providerId = providerId;
     }
 
-//    @Builder
-//    public UserEntity(String username, String nickname, String email, String profileImage, String role, String provider, String providerId) {
-//        this.username = username;
-//        this.nickname = nickname;
-//        this.email = email;
-//        this.profileImage = profileImage;
-//        this.role = role;
-//        this.provider = provider;
-//        this.providerId = providerId;
-//    }
-//
-//    public UserEntity() {
-//
-//    }
+    @Builder
+    public User(String username, String nickname, String email, String profileImage, String role, String providerId) {
+        this.username = username;
+        this.nickname = nickname;
+        this.email = email;
+        this.profileImage = profileImage;
+        this.role = role;
+        this.providerId = providerId;
+    }
+
 //
 //    public UserEntity update(String name, String picture) {
 //        this.name = name;
