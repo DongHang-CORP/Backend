@@ -13,4 +13,10 @@ public class OAuth2LoginDto {
     private String accessToken;
 
     private String refreshToken;
+
+    public OAuth2LoginDto(User user, String accessToken, String refreshToken) {
+        this.user = user;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
 }
