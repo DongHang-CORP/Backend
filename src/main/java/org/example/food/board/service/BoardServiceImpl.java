@@ -42,7 +42,7 @@ public class BoardServiceImpl implements BoardService {
         if (!boardRepository.existsById(id)) {
             throw new BoardException(BoardExceptionType.NOT_FOUND_board);
         }
-        Board board = boardRepository.findById(id).get();
+        Board board = boardRepository.findBoardWithComments(id);
         boolean likeState = likeRepository.existsByUserIdAndBoardId(user.getId(), board.getId());
         return BoardDetailResponse.of(board, likeState);
     }

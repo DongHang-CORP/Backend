@@ -38,10 +38,10 @@ public class BoardController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Void> getBoard(@PathVariable Long id, @LoginUser User user) {
+    public ResponseEntity<BoardDetailResponse> getBoard(@PathVariable Long id, @LoginUser User user) {
 
         BoardDetailResponse boardResponse = boardService.getBoard(id, user);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(boardResponse);
     }
 
     @DeleteMapping("/{id}")
