@@ -2,10 +2,12 @@ package org.example.food.like.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.food.common.jwt.LoginUser;
+import org.example.food.like.dto.LikeFlipResponse;
 import org.example.food.like.dto.LikeReqDto;
 import org.example.food.like.service.LikeService;
-import org.example.food.user.dto.CustomUserDetails;
 import org.example.food.user.entity.User;
+import org.example.food.user.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,18 +19,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/videos")
+@RequestMapping("/api/boards")
 public class LikeController {
 
     private final LikeService likeService;
-
-    @PutMapping("/{videoId}/like")
-    public ResponseEntity<LikeReqDto> likeVideo(
-            @PathVariable Long videoId,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        User user = userDetails.getUser();
-        LikeReqDto like = likeService.like(user, videoId);
-        return new ResponseEntity<>(like, HttpStatus.OK);
+    private final UserRepository userRepository;
+    @PutMapping("/{boardId}/like")
+    public ResponseEntity<LikeFlipResponse> likeBoard(
+            @PathVariable Long boardId) {
+        User user = userRepository.findById(1L).orElseThrow();
+//        LoginUser User user
+        LikeFlipResponse likeFlipResponse = likeService.flipboardLike(boardId, user);
+        return new ResponseEntity<>(likeFlipResponse, HttpStatus.OK);
     }
 }

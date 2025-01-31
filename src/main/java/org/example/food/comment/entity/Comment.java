@@ -1,42 +1,33 @@
-package org.example.food.like.entity;
-
+package org.example.food.comment.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.food.user.entity.User;
 import org.example.food.board.entity.Board;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-@Entity
+@Data
 @NoArgsConstructor
-@Getter
-@Table(name = "likes")
-public class Like {
-    @Id
+@AllArgsConstructor
+@Entity
+public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "like_id")
+    @Id
     private Long id;
+
+    @Column(nullable = false)
+    private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Board board;
-
-    @Builder
-    private Like(User user, Board board) {
-        this.user = user;
-        this.board = board;
-    }
-
-    public boolean isLikeOf(Long userId) {
-        return user.hasId(userId);
-    }
-
-    public void delete() {
-        this.board = null;
-    }
 }
